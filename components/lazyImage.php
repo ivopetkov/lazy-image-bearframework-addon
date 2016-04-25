@@ -44,15 +44,19 @@ if ($aspectRatio === null) {
 ?><html>
     <head>
         <style>
-            .responsively-lazy:not(img){position:relative;height:0}.responsively-lazy:not(img) img{position:absolute;top:0;left:0;width:100%;height:100%}img.responsively-lazy{width:100%;}
+            .responsively-lazy:not(img){position:relative;height:0;}.responsively-lazy:not(img) img{position:absolute;top:0;left:0;width:100%;height:100%}img.responsively-lazy{width:100%;}
         </style>
+        <script src="<?= $context->assets->getUrl('assets/responsivelyLazy.min.js'); ?>"/>
     </head>
     <body><?php
-        echo '<div style="' . htmlentities($component->style) . '">';
-        echo '<div class="responsively-lazy" style="padding-bottom:' . (number_format($aspectRatio[1] / $aspectRatio[0], 6, '.', '') * 100) . '%;">';
-        echo '<img alt="' . htmlentities($component->alt) . '" title="' . htmlentities($component->title) . '" src="' . htmlentities($originalUrl) . '" data-srcset="' . htmlentities(implode(', ', $versions)) . '" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" />';
-        echo '</div>';
-        echo '<script src="' . $context->assets->getUrl('assets/responsivelyLazy.min.js') . '"/>';
-        echo '</div>';
-        ?></body>
+$class = (string) $component->getAttribute('class');
+$classAttribute = isset($class{0}) ? ' class="' . htmlentities($class) . '"' : '';
+$title = (string) $component->getAttribute('title');
+$titleAttribute = isset($class{0}) ? ' title="' . htmlentities($title) . '"' : '';
+echo '<span style="display:block;' . htmlentities($component->style) . '">';
+echo '<span class="responsively-lazy' . ($component->getAttribute('responsively-lazy-overflown') === 'true' ? ' responsively-lazy-overflown' : '') . '" style="display:block;padding-bottom:' . (number_format($aspectRatio[1] / $aspectRatio[0], 6, '.', '') * 100) . '%;">';
+echo '<img alt="' . htmlentities($title) . '"' . $classAttribute . $titleAttribute . ' src="' . htmlentities($originalUrl) . '" data-srcset="' . htmlentities(implode(', ', $versions)) . '" srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" />';
+echo '</span>';
+echo '</span>';
+?></body>
 </html>
