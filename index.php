@@ -9,4 +9,4 @@
 
 $context->assets->addDir('assets/');
 
-$app->components->addAlias('lazy-image', 'file:' . $context->dir . 'components/lazyImage.php');
+$app->components->addAlias('lazy-image', 'file:' . $context->dir . '/components/lazyImage.php');
