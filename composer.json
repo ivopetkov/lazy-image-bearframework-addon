@@ -1,7 +1,7 @@
 {
     "name": "ivopetkov/lazy-image-bearframework-addon",
     "description": "Lazy image addon for Bear Framework",
-    "keywords": ["lazy", "responsive", "image", "addon", "Bear Framework"],
+    "keywords": ["lazy loading", "responsive image", "image", "Bear Framework addon"],
     "homepage": "https://github.com/ivopetkov/lazy-image-bearframework-addon",
     "license": "MIT",
     "authors": [
