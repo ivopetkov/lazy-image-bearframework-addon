@@ -15,6 +15,8 @@ if ($temp !== '') {
     }
 }
 
+$containerStyle = 'display:block;margin:0 auto;';
+
 $filename = (string) $component->filename;
 if ($filename !== '') {
     try {
@@ -27,6 +29,7 @@ if ($filename !== '') {
         $imageHeight = 0;
     }
     if ($imageWidth > 0 && $imageHeight > 0) {
+        $containerStyle .= 'max-width:' . $imageWidth . 'px;max-height:' . $imageHeight . 'px;';
         $versions = [];
         $addVersionUrl = function($width) use ($app, &$versions, $filename, $aspectRatio, $imageHeight) {
             $options = ['width' => $width];
@@ -75,7 +78,7 @@ $dataSrcsetAttribute = isset($versions) ? ' data-srcset="' . htmlentities(implod
         <script id="lazy-image-bearframework-addon-script" src="<?= $context->assets->getUrl('assets/responsivelyLazy.min.js'); ?>" async/>
     </head>
     <body><?php
-        echo '<span' . $classAttribute . ' style="display:block;' . htmlentities($component->style) . '">';
+        echo '<span' . $classAttribute . ' style="' . $containerStyle . htmlentities($component->style) . '">';
         echo '<span class="responsively-lazy" data-onlazyload="this.style.backgroundImage=\'none\';" style="' . $style . '">';
         echo '<img ' . $altAttribute . $titleAttribute . $srcAttribute . $dataSrcsetAttribute . ' srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" />';
         echo '</span>';
