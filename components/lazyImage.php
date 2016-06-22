@@ -65,7 +65,7 @@ if ($aspectRatio !== null) {
 $class = (string) $component->class;
 $classAttribute = isset($class{0}) ? ' class="' . htmlentities($class) . '"' : '';
 $alt = (string) $component->alt;
-$altAttribute = isset($alt{0}) ? ' alt="' . htmlentities($alt) . '"' : '';
+$altAttribute = isset($alt{0}) ? ' alt="' . htmlentities($alt) . '"' : ' alt=""';
 $title = (string) $component->title;
 $titleAttribute = isset($title{0}) ? ' title="' . htmlentities($title) . '"' : '';
 $srcAttribute = isset($originalUrl) ? ' src="' . htmlentities($originalUrl) . '"' : '';
