@@ -1,7 +1,7 @@
 # Lazy Image
 Addon for Bear Framework
 
-This addon enables you to easily create lazy-loaded images that are SEO friendly. It's based on the popular library [Responsively Lazy](https://github.com/ivopetkov/responsively-lazy/).
+This addon enables you to easily create lazy-loaded images that are SEO friendly. It's based on the popular library [Responsively Lazy](https://github.com/ivopetkov/responsively-lazy/). Multiple versions with different sizes are created on the fly and only the best one is loaded. This saves bandwidth and loads the website faster.
 
 [![Build Status](https://travis-ci.org/ivopetkov/lazy-image-bearframework-addon.svg)](https://travis-ci.org/ivopetkov/lazy-image-bearframework-addon)
 [![Latest Stable Version](https://poser.pugx.org/ivopetkov/lazy-image-bearframework-addon/v/stable)](https://packagist.org/packages/ivopetkov/lazy-image-bearframework-addon)
