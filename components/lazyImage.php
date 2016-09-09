@@ -8,12 +8,11 @@
 
 $aspectRatio = null;
 $temp = (string) $component->aspectRatio;
-if ($temp !== '') {
-    if (preg_match('/^[0-9\.]+:[0-9\.]+$/', $temp) === 1) {
-        $temp = explode(':', $temp);
-        $aspectRatio = [(double) $temp[0], (double) $temp[1]];
-    }
+if (preg_match('/^[0-9\.]+:[0-9\.]+$/', $temp) === 1) {
+    $temp = explode(':', $temp);
+    $aspectRatio = [(double) $temp[0], (double) $temp[1]];
 }
+unset($temp);
 
 $containerStyle = 'display:block;margin:0 auto;';
 
@@ -62,20 +61,18 @@ $style = 'display:block;background-image:url(\'data:image/png;base64,iVBORw0KGgo
 if ($aspectRatio !== null) {
     $style .= 'padding-bottom:' . (number_format($aspectRatio[1] / $aspectRatio[0], 6, '.', '') * 100) . '%;';
 }
+$srcAttribute = isset($originalUrl) ? ' src="' . htmlentities($originalUrl) . '"' : '';
+$dataSrcsetAttribute = isset($versions) ? ' data-srcset="' . htmlentities(implode(', ', $versions)) . '"' : '';
+
 $class = (string) $component->class;
 $classAttribute = isset($class{0}) ? ' class="' . htmlentities($class) . '"' : '';
 $alt = (string) $component->alt;
 $altAttribute = isset($alt{0}) ? ' alt="' . htmlentities($alt) . '"' : ' alt=""';
 $title = (string) $component->title;
 $titleAttribute = isset($title{0}) ? ' title="' . htmlentities($title) . '"' : '';
-$srcAttribute = isset($originalUrl) ? ' src="' . htmlentities($originalUrl) . '"' : '';
-$dataSrcsetAttribute = isset($versions) ? ' data-srcset="' . htmlentities(implode(', ', $versions)) . '"' : '';
 ?><html>
     <head>
-        <style id="lazy-image-bearframework-addon-style">
-            .responsively-lazy:not(img){position:relative;height:0;}.responsively-lazy:not(img) img{position:absolute;top:0;left:0;width:100%;height:100%}img.responsively-lazy{width:100%;}
-        </style>
-        <script id="lazy-image-bearframework-addon-script" src="<?= $context->assets->getUrl('assets/responsivelyLazy.min.js'); ?>" async/>
+        <style id="lazy-image-bearframework-addon-style">.responsively-lazy:not(img){position:relative;height:0;}.responsively-lazy:not(img) img{position:absolute;top:0;left:0;width:100%;height:100%}img.responsively-lazy{width:100%;}</style>
     </head>
     <body><?php
         echo '<span' . $classAttribute . ' style="' . $containerStyle . htmlentities($component->style) . '">';
@@ -83,5 +80,6 @@ $dataSrcsetAttribute = isset($versions) ? ' data-srcset="' . htmlentities(implod
         echo '<img ' . $altAttribute . $titleAttribute . $srcAttribute . $dataSrcsetAttribute . ' srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" />';
         echo '</span>';
         echo '</span>';
+        echo '<script id="lazy-image-bearframework-addon-script" src="' . $context->assets->getUrl('assets/responsivelyLazy.min.js') . '" async/>';
         ?></body>
 </html>
