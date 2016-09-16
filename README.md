@@ -48,6 +48,10 @@ $app->addons->add('ivopetkov/lazy-image-bearframework-addon');
 
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;The proportional relationship between the width and the height of the image. It is useful for cropping and resizing the image. Example values: 1:1, 1:2, 1.5:1, etc.
 
+`loadingBackground`
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;The type of background shown while the image is loading. Available values: none and checkered.
+
 `class`
 
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;HTML class attribute value
