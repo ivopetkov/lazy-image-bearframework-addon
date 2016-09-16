@@ -14,7 +14,7 @@ if (preg_match('/^[0-9\.]+:[0-9\.]+$/', $temp) === 1) {
 }
 unset($temp);
 
-$containerStyle = 'display:block;margin:0 auto;';
+$containerStyle = 'display:inline-block;width:100%;';
 
 $filename = (string) $component->filename;
 if ($filename !== '') {
