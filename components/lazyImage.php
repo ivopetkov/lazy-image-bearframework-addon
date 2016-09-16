@@ -14,7 +14,15 @@ if (preg_match('/^[0-9\.]+:[0-9\.]+$/', $temp) === 1) {
 }
 unset($temp);
 
-$containerStyle = 'display:inline-block;width:100%;';
+$loadingBackground = 'checkered';
+$temp = (string) $component->loadingBackground;
+if ($temp !== '') {
+    if (array_search($temp, ['checkered', 'none']) !== false) {
+        $loadingBackground = $temp;
+    }
+}
+
+$containerStyle = 'display:inline-block;width:100%;overflow:hidden;';
 
 $filename = (string) $component->filename;
 if ($filename !== '') {
@@ -57,9 +65,14 @@ if ($filename !== '') {
     }
 }
 
-$style = 'display:block;background-image:url(\'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUAQMAAAC3R49OAAAABlBMVEUAAAD///+l2Z/dAAAAAnRSTlMZGYn4zOAAAAAUSURBVAjXY2Sw38hIDP5/0IEYDADG0R1147/PtQAAAABJRU5ErkJggg==\');';
+$attributes = '';
+$style = 'display:block;';
 if ($aspectRatio !== null) {
     $style .= 'padding-bottom:' . (number_format($aspectRatio[1] / $aspectRatio[0], 6, '.', '') * 100) . '%;';
+}
+if ($loadingBackground === 'checkered') {
+    $attributes .= ' data-onlazyload="this.style.backgroundImage=\'none\';"';
+    $style .= 'background-image:url(\'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUAQMAAAC3R49OAAAABlBMVEUAAAD///+l2Z/dAAAAAnRSTlMZGYn4zOAAAAAUSURBVAjXY2Sw38hIDP5/0IEYDADG0R1147/PtQAAAABJRU5ErkJggg==\');';
 }
 $srcAttribute = isset($originalUrl) ? ' src="' . htmlentities($originalUrl) . '"' : '';
 $dataSrcsetAttribute = isset($versions) ? ' data-srcset="' . htmlentities(implode(', ', $versions)) . '"' : '';
@@ -76,7 +89,7 @@ $titleAttribute = isset($title{0}) ? ' title="' . htmlentities($title) . '"' : '
     </head>
     <body><?php
         echo '<span' . $classAttribute . ' style="' . $containerStyle . htmlentities($component->style) . '">';
-        echo '<span class="responsively-lazy" data-onlazyload="this.style.backgroundImage=\'none\';" style="' . $style . '">';
+        echo '<span class="responsively-lazy"' . $attributes . ' style="' . $style . '">';
         echo '<img ' . $altAttribute . $titleAttribute . $srcAttribute . $dataSrcsetAttribute . ' srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" />';
         echo '</span>';
         echo '</span>';
