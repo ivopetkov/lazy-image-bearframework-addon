@@ -6,6 +6,11 @@
  * Free to use under the MIT license.
  */
 
+use \BearFramework\App;
+
+$app = App::get();
+$context = $app->getContext(__FILE__);
+
 $aspectRatio = null;
 $temp = (string) $component->aspectRatio;
 if (preg_match('/^[0-9\.]+:[0-9\.]+$/', $temp) === 1) {
