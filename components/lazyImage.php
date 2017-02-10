@@ -9,7 +9,7 @@
 use \BearFramework\App;
 
 $app = App::get();
-$context = $app->getContext(__FILE__);
+$context = $app->context->get(__FILE__);
 
 $aspectRatio = null;
 $temp = (string) $component->aspectRatio;
