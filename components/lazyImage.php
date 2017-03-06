@@ -44,9 +44,9 @@ if ($filename !== '') {
         $containerStyle .= 'max-width:' . $imageWidth . 'px;max-height:' . $imageHeight . 'px;';
         $versions = [];
         $addVersionUrl = function($width) use ($app, &$versions, $filename, $aspectRatio, $imageHeight) {
-            $options = ['width' => $width];
+            $options = ['width' => (int) $width];
             if ($aspectRatio !== null) {
-                $options['height'] = $width * $aspectRatio[1] / $aspectRatio[0];
+                $options['height'] = (int) ($width * $aspectRatio[1] / $aspectRatio[0]);
                 if ($options['height'] > $imageHeight) {
                     return;
                 }
