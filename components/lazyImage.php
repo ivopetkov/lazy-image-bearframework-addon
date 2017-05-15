@@ -51,6 +51,8 @@ if ($filename !== '') {
                     return;
                 }
             }
+            $options['cacheMaxAge'] = 999999;
+            $options['version'] = 1;
             $versions[] = $app->assets->getUrl($filename, $options) . ' ' . $width . 'w';
         };
         for ($width = 200; $width <= $imageWidth; $width += 200) {
@@ -90,7 +92,7 @@ $title = (string) $component->title;
 $titleAttribute = isset($title{0}) ? ' title="' . htmlentities($title) . '"' : '';
 ?><html>
     <head>
-        <style id="lazy-image-bearframework-addon-style">.responsively-lazy:not(img){position:relative;height:0;}.responsively-lazy:not(img) img{position:absolute;top:0;left:0;width:100%;height:100%}img.responsively-lazy{width:100%;}</style>
+        <style id="lazy-image-bearframework-addon-style">.responsively-lazy:not(img){position:relative;height:0;}.responsively-lazy:not(img)>img{position:absolute;top:0;left:0;width:100%;height:100%}img.responsively-lazy{width:100%;}</style>
     </head>
     <body><?php
         echo '<span' . $classAttribute . ' style="' . $containerStyle . htmlentities($component->style) . '">';
@@ -98,6 +100,6 @@ $titleAttribute = isset($title{0}) ? ' title="' . htmlentities($title) . '"' : '
         echo '<img ' . $altAttribute . $titleAttribute . $srcAttribute . $dataSrcsetAttribute . ' srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" />';
         echo '</span>';
         echo '</span>';
-        echo '<script id="lazy-image-bearframework-addon-script" src="' . $context->assets->getUrl('assets/responsivelyLazy.min.js') . '" async/>';
+        echo '<script id="lazy-image-bearframework-addon-script" src="' . $context->assets->getUrl('assets/responsivelyLazy.min.js', ['cacheMaxAge' => 999999, 'version' => 1]) . '" async/>';
         ?></body>
 </html>
