@@ -27,12 +27,34 @@ if ($temp !== '') {
     }
 }
 
+$localCache = [];
+$getImageSize = function($filename) use ($app, &$localCache) {
+    $cacheKey = 'lazy-image-size-' . $filename;
+    if (isset($localCache[$cacheKey])) {
+        return $localCache[$cacheKey];
+    }
+    $cachedData = $app->cache->getValue($cacheKey);
+    if ($cachedData !== null) {
+        $size = json_decode($cachedData, true);
+        $localCache[$cacheKey] = $size;
+        return $size;
+    }
+    try {
+        $size = $app->images->getSize($filename);
+    } catch (\Exception $ex) {
+        $size = [1, 1];
+    }
+    $localCache[$cacheKey] = $size;
+    $app->cache->set($app->cache->make($cacheKey, json_encode($size)));
+    return $size;
+};
+
 $containerStyle = 'display:inline-block;width:100%;overflow:hidden;';
 
 $filename = (string) $component->filename;
 if ($filename !== '') {
     try {
-        list($imageWidth, $imageHeight) = $app->images->getSize($filename);
+        list($imageWidth, $imageHeight) = $getImageSize($filename);
     } catch (\Exception $e) {
         if ($app->config->displayErrors) {
             throw $e;
