@@ -122,6 +122,6 @@ $titleAttribute = isset($title{0}) ? ' title="' . htmlentities($title) . '"' : '
         echo '<img ' . $altAttribute . $titleAttribute . $srcAttribute . $dataSrcsetAttribute . ' srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" />';
         echo '</span>';
         echo '</span>';
-        echo '<script id="lazy-image-bearframework-addon-script" src="' . $context->assets->getUrl('assets/responsivelyLazy.min.js', ['cacheMaxAge' => 999999, 'version' => 1]) . '" async/>';
+        echo '<script id="lazy-image-bearframework-addon-script" src="' . $context->assets->getUrl('assets/responsivelyLazy.min.js', ['cacheMaxAge' => 999999, 'version' => 2]) . '" async/>';
         ?></body>
 </html>
