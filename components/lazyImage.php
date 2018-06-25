@@ -67,10 +67,16 @@ if ($filename !== '') {
         $versions = [];
         $addVersionUrl = function($width) use ($app, &$versions, $filename, $aspectRatio, $imageHeight) {
             $options = ['width' => (int) $width];
+            if ($options['width'] < 1) {
+                $options['width'] = 1;
+            }
             if ($aspectRatio !== null) {
                 $options['height'] = (int) ($width * $aspectRatio[1] / $aspectRatio[0]);
                 if ($options['height'] > $imageHeight) {
                     return;
+                }
+                if ($options['height'] < 1) {
+                    $options['height'] = 1;
                 }
             }
             $options['cacheMaxAge'] = 999999999;
