@@ -28,7 +28,8 @@ class LazyImageTest extends BearFrameworkAddonTestCase
         $this->assertTrue(strpos($result, 'srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="') !== false);
 
         $result = $app->components->process('<component src="lazy-image" filename="' . $app->config->appDir . '/images/test.jpg" aspectRatio="1:1" />');
-        $this->assertTrue(strpos($result, 'h70-w70/test.jpg') !== false);
+        $this->assertTrue(strpos($result, '-w70-h70-') !== false);
+        $this->assertTrue(strpos($result, '/test.jpg') !== false);
 
         $result = $app->components->process('<component src="lazy-image" filename="' . $app->config->appDir . '/images/test.jpg" loadingBackground="checkered" />');
         $this->assertTrue(strpos($result, 'background-image:url(\'data:image/png;base64,iVBORw0KGgoAAAANSUhE') !== false);
