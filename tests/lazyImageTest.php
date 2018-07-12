@@ -10,7 +10,7 @@
 /**
  * @runTestsInSeparateProcesses
  */
-class LazyImageTest extends BearFrameworkAddonTestCase
+class LazyImageTest extends BearFramework\AddonTests\PHPUnitTestCase
 {
 
     /**
@@ -19,7 +19,7 @@ class LazyImageTest extends BearFrameworkAddonTestCase
     public function testOutput()
     {
         $app = $this->getApp();
-        $this->createSampleFile($app->config->appDir . '/images/test.jpg', 'jpg');
+        $this->makeSampleFile($app->config->appDir . '/images/test.jpg', 'jpg');
 
         $app->assets->addDir($app->config->appDir . '/images/');
 
