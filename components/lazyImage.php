@@ -9,7 +9,7 @@
 use \BearFramework\App;
 
 $app = App::get();
-$context = $app->context->get(__FILE__);
+$context = $app->contexts->get(__FILE__);
 
 $aspectRatio = null;
 $temp = (string) $component->aspectRatio;
@@ -40,8 +40,9 @@ $getImageSize = function($filename) use ($app, &$localCache) {
         return $size;
     }
     try {
-        $size = $app->images->getSize($filename);
-    } catch (\Exception $ex) {
+        $details = $app->assets->getDetails($filename, ['width', 'height']);
+        $size = [$details['width'], $details['height']];
+    } catch (\Exception $e) {
         $size = [1, 1];
     }
     $localCache[$cacheKey] = $size;
@@ -56,9 +57,6 @@ if ($filename !== '') {
     try {
         list($imageWidth, $imageHeight) = $getImageSize($filename);
     } catch (\Exception $e) {
-        if ($app->config->displayErrors) {
-            throw $e;
-        }
         $imageWidth = 0;
         $imageHeight = 0;
     }
@@ -81,9 +79,9 @@ if ($filename !== '') {
             }
             $options['cacheMaxAge'] = 999999999;
             $options['version'] = 1;
-            $versions[] = $app->assets->getUrl($filename, $options) . ' ' . $width . 'w';
+            $versions[] = $app->assets->getURL($filename, $options) . ' ' . $width . 'w';
 //            $options['outputType'] = 'webp';
-//            $versions[] = $app->assets->getUrl($filename, $options) . ' ' . $width . 'w';
+//            $versions[] = $app->assets->getURL($filename, $options) . ' ' . $width . 'w';
         };
         for ($width = 200; $width <= $imageWidth; $width += 200) {
             $addVersionUrl($width);
@@ -130,6 +128,6 @@ $titleAttribute = isset($title{0}) ? ' title="' . htmlentities($title) . '"' : '
         echo '<img ' . $altAttribute . $titleAttribute . $srcAttribute . $dataSrcsetAttribute . ' srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" />';
         echo '</span>';
         echo '</span>';
-        echo '<script id="lazy-image-bearframework-addon-script" src="' . $context->assets->getUrl('assets/responsivelyLazy.min.js', ['cacheMaxAge' => 999999999, 'version' => 2]) . '" async/>';
+        echo '<script id="lazy-image-bearframework-addon-script" src="' . $context->assets->getURL('assets/responsivelyLazy.min.js', ['cacheMaxAge' => 999999999, 'version' => 2]) . '" async/>';
         ?></body>
 </html>
