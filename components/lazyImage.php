@@ -27,39 +27,23 @@ if ($temp !== '') {
     }
 }
 
-$localCache = [];
-$getImageSize = function($filename) use ($app, &$localCache) {
+$getImageSize = function($filename) use ($app) {
     $cacheKey = 'lazy-image-size-' . $filename;
-    if (isset($localCache[$cacheKey])) {
-        return $localCache[$cacheKey];
-    }
     $cachedData = $app->cache->getValue($cacheKey);
     if ($cachedData !== null) {
-        $size = json_decode($cachedData, true);
-        $localCache[$cacheKey] = $size;
-        return $size;
+        return json_decode($cachedData, true);
     }
-    try {
-        $details = $app->assets->getDetails($filename, ['width', 'height']);
-        $size = [$details['width'], $details['height']];
-    } catch (\Exception $e) {
-        $size = [1, 1];
-    }
-    $localCache[$cacheKey] = $size;
-    $app->cache->set($app->cache->make($cacheKey, json_encode($size)));
-    return $size;
+    $details = $app->assets->getDetails($filename, ['width', 'height']);
+    $result = [$details['width'], $details['height']];
+    $app->cache->set($app->cache->make($cacheKey, json_encode($result)));
+    return $result;
 };
 
 $containerStyle = 'display:inline-block;width:100%;overflow:hidden;';
 
 $filename = (string) $component->filename;
 if ($filename !== '') {
-    try {
-        list($imageWidth, $imageHeight) = $getImageSize($filename);
-    } catch (\Exception $e) {
-        $imageWidth = 0;
-        $imageHeight = 0;
-    }
+    list($imageWidth, $imageHeight) = $getImageSize($filename);
     if ($imageWidth > 0 && $imageHeight > 0) {
         $containerStyle .= 'max-width:' . $imageWidth . 'px;max-height:' . $imageHeight . 'px;';
         $versions = [];
