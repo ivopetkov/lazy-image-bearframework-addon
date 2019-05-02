@@ -103,15 +103,15 @@ $altAttribute = isset($alt{0}) ? ' alt="' . htmlentities($alt) . '"' : ' alt=""'
 $title = (string) $component->title;
 $titleAttribute = isset($title{0}) ? ' title="' . htmlentities($title) . '"' : '';
 ?><html>
-    <head><?php
-?><style id="lazy-image-bearframework-addon-style">.responsively-lazy:not(img){position:relative;height:0;}.responsively-lazy:not(img)>img{position:absolute;top:0;left:0;width:100%;height:100%}img.responsively-lazy{width:100%;}</style><?php
-?></head>
+    <head>
+        <link rel="client-shortcuts-embed" name="-ivopetkov-lazy-image-responsively-lazy">
+    </head>
     <body><?php
         echo '<span' . $classAttribute . ' style="' . $containerStyle . htmlentities($component->style) . '">';
         echo '<span class="responsively-lazy"' . $attributes . ' style="' . $style . '">';
         echo '<img ' . $altAttribute . $titleAttribute . $srcAttribute . $dataSrcsetAttribute . ' srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" />';
         echo '</span>';
         echo '</span>';
-        echo '<script id="lazy-image-bearframework-addon-script" src="' . $context->assets->getURL('assets/responsivelyLazy.min.js', ['cacheMaxAge' => 999999999, 'version' => 2]) . '" async/>';
+        echo '<script>clientShortcuts.get(\'-ivopetkov-lazy-image-responsively-lazy\').then(function(reponsivelyLazy){reponsivelyLazy.run();})</script>';
         ?></body>
 </html>

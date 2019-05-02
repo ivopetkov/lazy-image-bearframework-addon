@@ -9,6 +9,7 @@
 
 BearFramework\Addons::register('ivopetkov/lazy-image-bearframework-addon', __DIR__, [
     'require' => [
-        'ivopetkov/html-server-components-bearframework-addon'
+        'ivopetkov/html-server-components-bearframework-addon',
+        'ivopetkov/client-shortcuts-bearframework-addon'
     ]
 ]);
