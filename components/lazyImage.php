@@ -112,6 +112,5 @@ $titleAttribute = isset($title{0}) ? ' title="' . htmlentities($title) . '"' : '
         echo '<img ' . $altAttribute . $titleAttribute . $srcAttribute . $dataSrcsetAttribute . ' srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" />';
         echo '</span>';
         echo '</span>';
-        echo '<script>clientShortcuts.get(\'-ivopetkov-lazy-image-responsively-lazy\').then(function(reponsivelyLazy){reponsivelyLazy.run();})</script>';
         ?></body>
 </html>
