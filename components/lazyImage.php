@@ -104,7 +104,7 @@ $title = (string) $component->title;
 $titleAttribute = isset($title{0}) ? ' title="' . htmlentities($title) . '"' : '';
 ?><html>
     <head>
-        <link rel="client-shortcuts-embed" name="-ivopetkov-lazy-image-responsively-lazy">
+        <link rel="client-packages-embed" name="-ivopetkov-lazy-image-responsively-lazy">
     </head>
     <body><?php
         echo '<span' . $classAttribute . ' style="' . $containerStyle . htmlentities($component->style) . '">';
