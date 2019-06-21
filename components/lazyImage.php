@@ -45,7 +45,16 @@ $filename = (string) $component->filename;
 if ($filename !== '') {
     list($imageWidth, $imageHeight) = $getImageSize($filename);
     if ($imageWidth > 0 && $imageHeight > 0) {
-        $containerStyle .= 'max-width:' . $imageWidth . 'px;max-height:' . $imageHeight . 'px;';
+        if ($aspectRatio !== null) {
+            $maxWidth = $imageHeight / ($aspectRatio[1] / $aspectRatio[0]);
+            if ($maxWidth > $imageWidth) {
+                $maxWidth = $imageWidth;
+            }
+            $maxHeight = $imageHeight;
+            $containerStyle .= 'max-width:' . $maxWidth . 'px;max-height:' . $maxHeight . 'px;';
+        } else {
+            $containerStyle .= 'max-width:' . $imageWidth . 'px;max-height:' . $imageHeight . 'px;';
+        }
         $versions = [];
         $addVersionUrl = function($width) use ($app, &$versions, $filename, $aspectRatio, $imageHeight) {
             $options = ['width' => (int) $width];
