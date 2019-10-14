@@ -15,7 +15,7 @@ $aspectRatio = null;
 $temp = (string) $component->aspectRatio;
 if (preg_match('/^[0-9\.]+:[0-9\.]+$/', $temp) === 1) {
     $temp = explode(':', $temp);
-    $aspectRatio = [(double) $temp[0], (double) $temp[1]];
+    $aspectRatio = [(float) $temp[0], (float) $temp[1]];
 }
 unset($temp);
 
@@ -27,7 +27,7 @@ if ($temp !== '') {
     }
 }
 
-$getImageSize = function($filename) use ($app) {
+$getImageSize = function ($filename) use ($app) {
     $cacheKey = 'lazy-image-size-' . $filename;
     $cachedData = $app->cache->getValue($cacheKey);
     if ($cachedData !== null) {
@@ -43,6 +43,7 @@ $containerStyle = 'display:inline-block;width:100%;overflow:hidden;';
 
 $filename = (string) $component->filename;
 if ($filename !== '') {
+    $extension = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
     list($imageWidth, $imageHeight) = $getImageSize($filename);
     if ($imageWidth > 0 && $imageHeight > 0) {
         if ($aspectRatio !== null) {
@@ -56,7 +57,7 @@ if ($filename !== '') {
             $containerStyle .= 'max-width:' . $imageWidth . 'px;max-height:' . $imageHeight . 'px;';
         }
         $versions = [];
-        $addVersionUrl = function($width) use ($app, &$versions, $filename, $aspectRatio, $imageHeight) {
+        $addVersionUrl = function ($width) use ($app, &$versions, $filename, $aspectRatio, $imageHeight) {
             $options = ['width' => (int) $width];
             if ($options['width'] < 1) {
                 $options['width'] = 1;
@@ -73,14 +74,16 @@ if ($filename !== '') {
             $options['cacheMaxAge'] = 999999999;
             $options['version'] = 1;
             $versions[] = $app->assets->getURL($filename, $options) . ' ' . $width . 'w';
-//            $options['outputType'] = 'webp';
-//            $versions[] = $app->assets->getURL($filename, $options) . ' ' . $width . 'w';
+            //            $options['outputType'] = 'webp';
+            //            $versions[] = $app->assets->getURL($filename, $options) . ' ' . $width . 'w';
         };
-        for ($width = 200; $width <= $imageWidth; $width += 200) {
-            $addVersionUrl($width);
-        }
-        if ($aspectRatio !== null) { // version for the max height
-            $addVersionUrl(floor($imageHeight / $aspectRatio[1] * $aspectRatio[0]));
+        if ($extension !== 'gif') {
+            for ($width = 200; $width <= $imageWidth; $width += 200) {
+                $addVersionUrl($width);
+            }
+            if ($aspectRatio !== null) { // version for the max height
+                $addVersionUrl(floor($imageHeight / $aspectRatio[1] * $aspectRatio[0]));
+            }
         }
         $addVersionUrl($imageWidth); // version for the max width
         $versions = array_unique($versions);
@@ -106,20 +109,23 @@ $srcAttribute = isset($originalUrl) ? ' src="' . htmlentities($originalUrl) . '"
 $dataSrcsetAttribute = isset($versions) ? ' data-srcset="' . htmlentities(implode(', ', $versions)) . '"' : '';
 
 $class = (string) $component->class;
-$classAttribute = isset($class{0}) ? ' class="' . htmlentities($class) . '"' : '';
+$classAttribute = isset($class[0]) ? ' class="' . htmlentities($class) . '"' : '';
 $alt = (string) $component->alt;
-$altAttribute = isset($alt{0}) ? ' alt="' . htmlentities($alt) . '"' : ' alt=""';
+$altAttribute = isset($alt[0]) ? ' alt="' . htmlentities($alt) . '"' : ' alt=""';
 $title = (string) $component->title;
-$titleAttribute = isset($title{0}) ? ' title="' . htmlentities($title) . '"' : '';
+$titleAttribute = isset($title[0]) ? ' title="' . htmlentities($title) . '"' : '';
 ?><html>
-    <head>
-        <link rel="client-packages-embed" name="-ivopetkov-lazy-image-responsively-lazy">
-    </head>
-    <body><?php
+
+<head>
+    <link rel="client-packages-embed" name="-ivopetkov-lazy-image-responsively-lazy">
+</head>
+
+<body><?php
         echo '<span' . $classAttribute . ' style="' . $containerStyle . htmlentities($component->style) . '">';
         echo '<span class="responsively-lazy"' . $attributes . ' style="' . $style . '">';
         echo '<img ' . $altAttribute . $titleAttribute . $srcAttribute . $dataSrcsetAttribute . ' srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" />';
         echo '</span>';
         echo '</span>';
         ?></body>
+
 </html>
