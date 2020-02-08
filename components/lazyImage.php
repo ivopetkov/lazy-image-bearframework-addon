@@ -28,15 +28,15 @@ if ($temp !== '') {
 }
 
 $getImageSize = function ($filename) use ($app) {
-    $cacheKey = 'lazy-image-size-' . $filename;
-    $cachedData = $app->cache->getValue($cacheKey);
-    if ($cachedData !== null) {
-        return json_decode($cachedData, true);
-    }
+    // $cacheKey = 'lazy-image-size-' . $filename;
+    // $cachedData = $app->cache->getValue($cacheKey);
+    // if ($cachedData !== null) {
+    //     return json_decode($cachedData, true);
+    // }
     $details = $app->assets->getDetails($filename, ['width', 'height']);
-    $result = [$details['width'], $details['height']];
-    $app->cache->set($app->cache->make($cacheKey, json_encode($result)));
-    return $result;
+    return [$details['width'], $details['height']];
+    //$app->cache->set($app->cache->make($cacheKey, json_encode($result)));
+    //return $result;
 };
 
 $containerStyle = 'display:inline-block;width:100%;overflow:hidden;';
