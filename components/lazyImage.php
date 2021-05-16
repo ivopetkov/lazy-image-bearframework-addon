@@ -27,6 +27,11 @@ if ($temp !== '') {
     }
 }
 
+$maxSize = (int)$component->maxSize;
+if ($maxSize === 0) {
+    $maxSize = null;
+}
+
 $getImageSize = function ($filename) use ($app) {
     // $cacheKey = 'lazy-image-size-' . $filename;
     // $cachedData = $app->cache->getValue($cacheKey);
@@ -45,9 +50,19 @@ $filename = (string) $component->filename;
 if ($filename !== '') {
     $extension = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
     list($imageWidth, $imageHeight) = $getImageSize($filename);
+    if ($maxSize !== null) {
+        if ($imageWidth > $maxSize) {
+            $imageHeight = floor($maxSize / $imageWidth * $imageHeight);
+            $imageWidth = $maxSize;
+        }
+        if ($imageHeight > $maxSize) {
+            $imageWidth = floor($maxSize / $imageHeight * $imageWidth);
+            $imageHeight = $maxSize;
+        }
+    }
     if ($imageWidth > 0 && $imageHeight > 0) {
         if ($aspectRatio !== null) {
-            $maxWidth = $imageHeight / ($aspectRatio[1] / $aspectRatio[0]);
+            $maxWidth = floor($imageHeight / ($aspectRatio[1] / $aspectRatio[0]));
             if ($maxWidth > $imageWidth) {
                 $maxWidth = $imageWidth;
             }
