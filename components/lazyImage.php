@@ -129,18 +129,17 @@ $alt = (string) $component->alt;
 $altAttribute = isset($alt[0]) ? ' alt="' . htmlentities($alt) . '"' : ' alt=""';
 $title = (string) $component->title;
 $titleAttribute = isset($title[0]) ? ' title="' . htmlentities($title) . '"' : '';
-?><html>
 
-<head>
-    <link rel="client-packages-embed" name="-ivopetkov-lazy-image-responsively-lazy">
-</head>
+echo '<html>';
 
-<body><?php
-        echo '<span' . $classAttribute . ' style="' . $containerStyle . htmlentities($component->style) . '">';
-        echo '<span class="responsively-lazy"' . $attributes . ' style="' . $style . '">';
-        echo '<img ' . $altAttribute . $titleAttribute . $srcAttribute . $dataSrcsetAttribute . ' srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" />';
-        echo '</span>';
-        echo '</span>';
-        ?></body>
+echo '<head><link rel="client-packages-embed" name="-ivopetkov-lazy-image-responsively-lazy"></head>';
 
-</html>
+echo '<body>';
+echo '<span' . $classAttribute . ' style="' . $containerStyle . htmlentities($component->style) . '">';
+echo '<span class="responsively-lazy"' . $attributes . ' style="' . $style . '">';
+echo '<img ' . $altAttribute . $titleAttribute . $srcAttribute . $dataSrcsetAttribute . ' srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" />';
+echo '</span>';
+echo '</span>';
+echo '</body>';
+
+echo '</html>';
