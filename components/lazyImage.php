@@ -32,19 +32,17 @@ if ($maxSize === 0) {
     $maxSize = null;
 }
 
+$quality = $component->getAttribute('quality');
+$quality = strlen($quality) === 0 ? null : (int)$quality;
+
 $getImageSize = function ($filename) use ($app) {
-    // $cacheKey = 'lazy-image-size-' . $filename;
-    // $cachedData = $app->cache->getValue($cacheKey);
-    // if ($cachedData !== null) {
-    //     return json_decode($cachedData, true);
-    // }
     $details = $app->assets->getDetails($filename, ['width', 'height']);
     return [$details['width'], $details['height']];
-    //$app->cache->set($app->cache->make($cacheKey, json_encode($result)));
-    //return $result;
 };
 
 $containerStyle = 'display:inline-block;width:100%;overflow:hidden;';
+
+$originalURL = null;
 
 $filename = (string) $component->filename;
 if ($filename !== '') {
@@ -72,7 +70,8 @@ if ($filename !== '') {
             $containerStyle .= 'max-width:' . $imageWidth . 'px;max-height:' . $imageHeight . 'px;';
         }
         $versions = [];
-        $addVersionUrl = function ($width) use ($app, &$versions, $filename, $aspectRatio, $imageHeight) {
+        $isWebpSupported = $app->assets->isSupportedOutputType('webp');
+        $addVersionURL = function ($width) use ($app, &$versions, $filename, $aspectRatio, $imageHeight, $quality, $isWebpSupported, &$originalURL) {
             $options = ['width' => (int) $width];
             if ($options['width'] < 1) {
                 $options['width'] = 1;
@@ -87,23 +86,27 @@ if ($filename !== '') {
                 }
             }
             $options['cacheMaxAge'] = 999999999;
-            $options['version'] = 1;
-            $versions[] = $app->assets->getURL($filename, $options) . ' ' . $width . 'w';
-            //            $options['outputType'] = 'webp';
-            //            $versions[] = $app->assets->getURL($filename, $options) . ' ' . $width . 'w';
+            if ($quality !== null) {
+                $options['quality'] = $quality;
+            }
+            $url = $app->assets->getURL($filename, $options);
+            $versions[] =  $url . ' ' . $width . 'w';
+            $originalURL = $url;
+            if ($isWebpSupported) {
+                $options['outputType'] = 'webp';
+                $versions[] = $app->assets->getURL($filename, $options) . ' ' . $width . 'w';
+            }
         };
         if ($extension !== 'gif') {
             for ($width = 200; $width <= $imageWidth; $width += 200) {
-                $addVersionUrl($width);
+                $addVersionURL($width);
             }
             if ($aspectRatio !== null) { // version for the max height
-                $addVersionUrl(floor($imageHeight / $aspectRatio[1] * $aspectRatio[0]));
+                $addVersionURL(floor($imageHeight / $aspectRatio[1] * $aspectRatio[0]));
             }
         }
-        $addVersionUrl($imageWidth); // version for the max width
+        $addVersionURL($imageWidth); // version for the max width
         $versions = array_unique($versions);
-        $originalVersion = array_pop($versions);
-        $originalUrl = explode(' ', $originalVersion)[0];
 
         if ($aspectRatio === null) {
             $aspectRatio = [$imageWidth, $imageHeight];
@@ -120,7 +123,7 @@ if ($loadingBackground === 'checkered') {
     $attributes .= ' data-onlazyload="this.style.backgroundImage=\'none\';"';
     $style .= 'background-image:url(\'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUAQMAAAC3R49OAAAABlBMVEUAAAD///+l2Z/dAAAAAnRSTlMZGYn4zOAAAAAUSURBVAjXY2Sw38hIDP5/0IEYDADG0R1147/PtQAAAABJRU5ErkJggg==\');';
 }
-$srcAttribute = isset($originalUrl) ? ' src="' . htmlentities($originalUrl) . '"' : '';
+$srcAttribute = isset($originalURL) ? ' src="' . htmlentities($originalURL) . '"' : '';
 $dataSrcsetAttribute = isset($versions) ? ' data-srcset="' . htmlentities(implode(', ', $versions)) . '"' : '';
 
 $class = (string) $component->class;
