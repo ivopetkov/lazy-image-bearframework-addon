@@ -9,7 +9,8 @@
 use \BearFramework\App;
 
 $app = App::get();
-$context = $app->contexts->get(__DIR__);
+
+$appAssets = $app->assets;
 
 $aspectRatio = null;
 $temp = (string) $component->aspectRatio;
@@ -35,8 +36,8 @@ if ($maxSize === 0) {
 $quality = $component->getAttribute('quality');
 $quality = strlen($quality) === 0 ? null : (int)$quality;
 
-$getImageSize = function ($filename) use ($app) {
-    $details = $app->assets->getDetails($filename, ['width', 'height']);
+$getImageSize = function ($filename) use ($appAssets) {
+    $details = $appAssets->getDetails($filename, ['width', 'height']);
     return [$details['width'], $details['height']];
 };
 
@@ -70,8 +71,8 @@ if ($filename !== '') {
             $containerStyle .= 'max-width:' . $imageWidth . 'px;max-height:' . $imageHeight . 'px;';
         }
         $versions = [];
-        $isWebpSupported = $app->assets->isSupportedOutputType('webp');
-        $addVersionURL = function ($width) use ($app, &$versions, $filename, $aspectRatio, $imageHeight, $quality, $isWebpSupported, &$originalURL) {
+        $isWebpSupported = $appAssets->isSupportedOutputType('webp');
+        $addVersionURL = function ($width) use ($appAssets, &$versions, $filename, $aspectRatio, $imageHeight, $quality, $isWebpSupported, &$originalURL) {
             $options = ['width' => (int) $width];
             if ($options['width'] < 1) {
                 $options['width'] = 1;
@@ -89,12 +90,12 @@ if ($filename !== '') {
             if ($quality !== null) {
                 $options['quality'] = $quality;
             }
-            $url = $app->assets->getURL($filename, $options);
+            $url = $appAssets->getURL($filename, $options);
             $versions[] =  $url . ' ' . $width . 'w';
             $originalURL = $url;
             if ($isWebpSupported) {
                 $options['outputType'] = 'webp';
-                $versions[] = $app->assets->getURL($filename, $options) . ' ' . $width . 'w';
+                $versions[] = $appAssets->getURL($filename, $options) . ' ' . $width . 'w webp';
             }
         };
         if ($extension !== 'gif') {
@@ -114,33 +115,38 @@ if ($filename !== '') {
     }
 }
 
-$attributes = '';
-$style = 'display:block;';
-if ($aspectRatio !== null) {
-    $style .= 'padding-bottom:' . (number_format($aspectRatio[1] / $aspectRatio[0], 6, '.', '') * 100) . '%;';
-}
-if ($loadingBackground === 'checkered') {
-    $attributes .= ' data-onlazyload="this.style.backgroundImage=\'none\';"';
-    $style .= 'background-image:url(\'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUAQMAAAC3R49OAAAABlBMVEUAAAD///+l2Z/dAAAAAnRSTlMZGYn4zOAAAAAUSURBVAjXY2Sw38hIDP5/0IEYDADG0R1147/PtQAAAABJRU5ErkJggg==\');';
-}
-$srcAttribute = isset($originalURL) ? ' src="' . htmlentities($originalURL) . '"' : '';
-$dataSrcsetAttribute = isset($versions) ? ' data-srcset="' . htmlentities(implode(', ', $versions)) . '"' : '';
+$imageContainerStyle = 'position:relative;height:0;display:block;';
+
+$imageAttributes = '';
 
 $class = (string) $component->class;
 $classAttribute = isset($class[0]) ? ' class="' . htmlentities($class) . '"' : '';
 $alt = (string) $component->alt;
-$altAttribute = isset($alt[0]) ? ' alt="' . htmlentities($alt) . '"' : ' alt=""';
+$imageAttributes .= isset($alt[0]) ? ' alt="' . htmlentities($alt) . '"' : ' alt=""';
 $title = (string) $component->title;
-$titleAttribute = isset($title[0]) ? ' title="' . htmlentities($title) . '"' : '';
+$imageAttributes .= isset($title[0]) ? ' title="' . htmlentities($title) . '"' : '';
+
+$imageStyle = 'position:absolute;top:0;left:0;width:100%;height:100%;';
+if ($aspectRatio !== null) {
+    $imageContainerStyle .= 'padding-bottom:' . (number_format($aspectRatio[1] / $aspectRatio[0], 6, '.', '') * 100) . '%;';
+}
+$imageAttributes .= isset($originalURL) ? ' src="' . htmlentities($originalURL) . '"' : '';
+$imageAttributes .= ' srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="';
+$imageAttributes .= isset($versions) ? ' data-responsively-lazy="' . htmlentities(implode(', ', $versions)) . '"' : '';
+$imageAttributes .= ' data-responsively-lazy-threshold="100%"';
+if ($loadingBackground === 'checkered') {
+    $imageAttributes .= ' data-on-responsively-lazy-load="this.parentNode.style.backgroundImage=\'none\';"';
+    $imageContainerStyle .= 'background-image:url(\'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUAQMAAAC3R49OAAAABlBMVEUAAAD///+l2Z/dAAAAAnRSTlMZGYn4zOAAAAAUSURBVAjXY2Sw38hIDP5/0IEYDADG0R1147/PtQAAAABJRU5ErkJggg==\');';
+}
 
 echo '<html>';
 
-echo '<head><link rel="client-packages-embed" name="-ivopetkov-lazy-image-responsively-lazy"></head>';
+echo '<head><link rel="client-packages-embed" name="responsivelyLazy"></head>';
 
 echo '<body>';
-echo '<span' . $classAttribute . ' style="' . $containerStyle . htmlentities($component->style) . '">';
-echo '<span class="responsively-lazy"' . $attributes . ' style="' . $style . '">';
-echo '<img ' . $altAttribute . $titleAttribute . $srcAttribute . $dataSrcsetAttribute . ' srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" />';
+echo '<span ' . $classAttribute . ' style="' . $containerStyle . htmlentities($component->style) . '">';
+echo '<span style="' . $imageContainerStyle . '">';
+echo '<img ' . $imageAttributes . ' style="' . $imageStyle . '" />';
 echo '</span>';
 echo '</span>';
 echo '</body>';
