@@ -99,8 +99,11 @@ if ($filename !== '') {
             }
         };
         if ($extension !== 'gif') {
-            for ($width = 200; $width <= $imageWidth; $width += 200) {
-                $addVersionURL($width);
+            $widths = [50, 75, 100, 125, 150, 175, 200, 250, 300, 350, 400, 450, 500, 550, 600, 650, 700, 750, 800, 850, 900, 950, 1000, 1100, 1200, 1300, 1400, 1500, 1700, 1900, 2100, 2500, 3000, 3500, 4000, 5000, 6000, 7000, 8000, 9000, 10000];
+            foreach ($widths as $width) {
+                if ($width <= $imageWidth) {
+                    $addVersionURL($width);
+                }
             }
             if ($aspectRatio !== null) { // version for the max height
                 $addVersionURL(floor($imageHeight / $aspectRatio[1] * $aspectRatio[0]));
