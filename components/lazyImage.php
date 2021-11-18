@@ -33,13 +33,14 @@ if ($maxSize === 0) {
     $maxSize = null;
 }
 
-$quality = $component->getAttribute('quality');
+$quality = (string)$component->getAttribute('quality');
 $quality = strlen($quality) === 0 ? null : (int)$quality;
 
-$getImageSize = function ($filename) use ($appAssets) {
-    $details = $appAssets->getDetails($filename, ['width', 'height']);
-    return [$details['width'], $details['height']];
-};
+$fileWidth = (string)$component->getAttribute('filewidth');
+$fileWidth = strlen($fileWidth) === 0 ? null : (int)$fileWidth;
+
+$fileHeight = (string)$component->getAttribute('fileheight');
+$fileHeight = strlen($fileHeight) === 0 ? null : (int)$fileHeight;
 
 $containerStyle = 'display:inline-block;width:100%;overflow:hidden;';
 
@@ -47,8 +48,15 @@ $originalURL = null;
 
 $filename = (string) $component->filename;
 if ($filename !== '') {
+    if ($fileWidth !== null && $fileHeight !== null) {
+        $imageWidth = $fileWidth;
+        $imageHeight = $fileHeight;
+    } else {
+        $details = $appAssets->getDetails($filename, ['width', 'height']);
+        $imageWidth = $details['width'];
+        $imageHeight = $details['height'];
+    }
     $extension = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
-    list($imageWidth, $imageHeight) = $getImageSize($filename);
     if ($maxSize !== null) {
         if ($imageWidth > $maxSize) {
             $imageHeight = floor($maxSize / $imageWidth * $imageHeight);
