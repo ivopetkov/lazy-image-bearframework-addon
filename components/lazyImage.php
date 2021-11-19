@@ -80,7 +80,7 @@ if ($filename !== '') {
         }
         $versions = [];
         $isWebpSupported = $appAssets->isSupportedOutputType('webp');
-        $addVersionURL = function ($width) use ($appAssets, &$versions, $filename, $aspectRatio, $imageHeight, $quality, $isWebpSupported, &$originalURL) {
+        $addVersionURL = function ($width) use ($appAssets, &$versions, $filename, $extension, $aspectRatio, $imageHeight, $quality, $isWebpSupported, &$originalURL) {
             $options = ['width' => (int) $width];
             if ($options['width'] < 1) {
                 $options['width'] = 1;
@@ -101,9 +101,11 @@ if ($filename !== '') {
             $url = $appAssets->getURL($filename, $options);
             $versions[] =  $url . ' ' . $width . 'w';
             $originalURL = $url;
-            if ($isWebpSupported) {
-                $options['outputType'] = 'webp';
-                $versions[] = $appAssets->getURL($filename, $options) . ' ' . $width . 'w webp';
+            if ($extension !== 'gif') {
+                if ($isWebpSupported) {
+                    $options['outputType'] = 'webp';
+                    $versions[] = $appAssets->getURL($filename, $options) . ' ' . $width . 'w webp';
+                }
             }
         };
         if ($extension !== 'gif') {
