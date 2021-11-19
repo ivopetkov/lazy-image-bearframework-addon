@@ -80,35 +80,43 @@ if ($filename !== '') {
         }
         $versions = [];
         $isWebpSupported = $appAssets->isSupportedOutputType('webp');
-        $addVersionURL = function ($width) use ($appAssets, &$versions, $filename, $extension, $aspectRatio, $imageHeight, $quality, $isWebpSupported, &$defaultURL) {
-            $options = ['width' => (int) $width];
-            if ($options['width'] < 1) {
-                $options['width'] = 1;
-            }
-            if ($aspectRatio !== null) {
-                $options['height'] = (int) ($width * $aspectRatio[1] / $aspectRatio[0]);
-                if ($options['height'] > $imageHeight) {
-                    return;
+        $addVersionURL = function ($width = null) use ($appAssets, &$versions, $filename, $extension, $aspectRatio, $imageHeight, $quality, $isWebpSupported, &$defaultURL) {
+            if ($width !== null) {
+                $options = ['width' => (int) $width];
+                if ($options['width'] < 1) {
+                    $options['width'] = 1;
                 }
-                if ($options['height'] < 1) {
-                    $options['height'] = 1;
+                if ($aspectRatio !== null) {
+                    $options['height'] = (int) ($width * $aspectRatio[1] / $aspectRatio[0]);
+                    if ($options['height'] > $imageHeight) {
+                        return;
+                    }
+                    if ($options['height'] < 1) {
+                        $options['height'] = 1;
+                    }
                 }
             }
             $options['cacheMaxAge'] = 999999999;
-            if ($quality !== null) {
-                $options['quality'] = $quality;
+            if ($extension !== 'gif') {
+                if ($quality !== null) {
+                    $options['quality'] = $quality;
+                }
             }
             $url = $appAssets->getURL($filename, $options);
-            $versions[] =  $url . ' ' . $width . 'w';
             $defaultURL = $url;
-            if ($extension !== 'gif') {
-                if ($isWebpSupported) {
-                    $options['outputType'] = 'webp';
-                    $versions[] = $appAssets->getURL($filename, $options) . ' ' . $width . 'w webp';
+            if ($width !== null) {
+                $versions[] =  $url . ' ' . $width . 'w';
+                if ($extension !== 'gif') {
+                    if ($isWebpSupported) {
+                        $options['outputType'] = 'webp';
+                        $versions[] = $appAssets->getURL($filename, $options) . ' ' . $width . 'w webp';
+                    }
                 }
             }
         };
-        if ($extension !== 'gif') {
+        if ($extension === 'gif') {
+            $addVersionURL(null);
+        } else {
             $widths = [50, 75, 100, 125, 150, 175, 200, 250, 300, 350, 400, 450, 500, 550, 600, 650, 700, 750, 800, 850, 900, 950, 1000, 1100, 1200, 1300, 1400, 1500, 1700, 1900, 2100, 2500, 3000, 3500, 4000, 5000, 6000, 7000, 8000, 9000, 10000];
             foreach ($widths as $width) {
                 if ($width <= $imageWidth) {
@@ -118,8 +126,8 @@ if ($filename !== '') {
             if ($aspectRatio !== null) { // version for the max height
                 $addVersionURL(floor($imageHeight / $aspectRatio[1] * $aspectRatio[0]));
             }
+            $addVersionURL($imageWidth); // version for the max width
         }
-        $addVersionURL($imageWidth); // version for the max width
         $versions = array_unique($versions);
 
         if ($aspectRatio === null) {
