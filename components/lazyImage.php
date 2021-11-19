@@ -44,7 +44,7 @@ $fileHeight = strlen($fileHeight) === 0 ? null : (int)$fileHeight;
 
 $containerStyle = 'display:inline-block;width:100%;overflow:hidden;';
 
-$originalURL = null;
+$defaultURL = null;
 
 $filename = (string) $component->filename;
 if ($filename !== '') {
@@ -80,7 +80,7 @@ if ($filename !== '') {
         }
         $versions = [];
         $isWebpSupported = $appAssets->isSupportedOutputType('webp');
-        $addVersionURL = function ($width) use ($appAssets, &$versions, $filename, $extension, $aspectRatio, $imageHeight, $quality, $isWebpSupported, &$originalURL) {
+        $addVersionURL = function ($width) use ($appAssets, &$versions, $filename, $extension, $aspectRatio, $imageHeight, $quality, $isWebpSupported, &$defaultURL) {
             $options = ['width' => (int) $width];
             if ($options['width'] < 1) {
                 $options['width'] = 1;
@@ -100,7 +100,7 @@ if ($filename !== '') {
             }
             $url = $appAssets->getURL($filename, $options);
             $versions[] =  $url . ' ' . $width . 'w';
-            $originalURL = $url;
+            $defaultURL = $url;
             if ($extension !== 'gif') {
                 if ($isWebpSupported) {
                     $options['outputType'] = 'webp';
@@ -143,7 +143,7 @@ $imageStyle = 'position:absolute;top:0;left:0;width:100%;height:100%;';
 if ($aspectRatio !== null) {
     $imageContainerStyle .= 'padding-bottom:' . (number_format($aspectRatio[1] / $aspectRatio[0], 6, '.', '') * 100) . '%;';
 }
-$imageAttributes .= isset($originalURL) ? ' src="' . htmlentities($originalURL) . '"' : '';
+$imageAttributes .= isset($defaultURL) ? ' src="' . htmlentities($defaultURL) . '"' : '';
 $imageAttributes .= ' srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="';
 $imageAttributes .= isset($versions) ? ' data-responsively-lazy="' . htmlentities(implode(', ', $versions)) . '"' : '';
 $imageAttributes .= ' data-responsively-lazy-threshold="100%"';
