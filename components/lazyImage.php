@@ -28,9 +28,21 @@ if ($temp !== '') {
     }
 }
 
-$maxSize = (int)$component->maxSize;
-if ($maxSize === 0) {
-    $maxSize = null;
+$minImageWidth = (int)$component->minImageWidth;
+if ($minImageWidth === 0) {
+    $minImageWidth = null;
+}
+$minImageHeight = (int)$component->minImageHeight;
+if ($minImageHeight === 0) {
+    $minImageHeight = null;
+}
+$maxImageWidth = (int)$component->maxImageWidth;
+if ($maxImageWidth === 0) {
+    $maxImageWidth = null;
+}
+$maxImageHeight = (int)$component->maxImageHeight;
+if ($maxImageHeight === 0) {
+    $maxImageHeight = null;
 }
 
 $quality = (string)$component->getAttribute('quality');
@@ -48,90 +60,129 @@ $defaultURL = null;
 
 $filename = (string) $component->filename;
 if ($filename !== '') {
-    if ($fileWidth !== null && $fileHeight !== null) {
-        $imageWidth = $fileWidth;
-        $imageHeight = $fileHeight;
-    } else {
+    if ($fileWidth === null || $fileHeight === null) {
         $details = $appAssets->getDetails($filename, ['width', 'height']);
-        $imageWidth = $details['width'];
-        $imageHeight = $details['height'];
+        $fileWidth = $details['width'];
+        $fileHeight = $details['height'];
     }
     $extension = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
-    if ($maxSize !== null) {
-        if ($imageWidth > $maxSize) {
-            $imageHeight = floor($maxSize / $imageWidth * $imageHeight);
-            $imageWidth = $maxSize;
-        }
-        if ($imageHeight > $maxSize) {
-            $imageWidth = floor($maxSize / $imageHeight * $imageWidth);
-            $imageHeight = $maxSize;
-        }
-    }
-    if ($imageWidth > 0 && $imageHeight > 0) {
+    if ($fileWidth > 0 && $fileHeight > 0) {
         if ($aspectRatio !== null) {
-            $maxWidth = floor($imageHeight / ($aspectRatio[1] / $aspectRatio[0]));
-            if ($maxWidth > $imageWidth) {
-                $maxWidth = $imageWidth;
+            $maxWidth = floor($fileHeight / ($aspectRatio[1] / $aspectRatio[0]));
+            if ($maxWidth > $fileWidth) {
+                $maxWidth = $fileWidth;
             }
-            $maxHeight = $imageHeight;
+            $maxHeight = $fileHeight;
             $containerStyle .= 'max-width:' . $maxWidth . 'px;max-height:' . $maxHeight . 'px;';
         } else {
-            $containerStyle .= 'max-width:' . $imageWidth . 'px;max-height:' . $imageHeight . 'px;';
+            $containerStyle .= 'max-width:' . $fileWidth . 'px;max-height:' . $fileHeight . 'px;';
         }
         $versions = [];
-        $isWebpSupported = $appAssets->isSupportedOutputType('webp');
-        $addVersionURL = function ($width = null) use ($appAssets, &$versions, $filename, $extension, $aspectRatio, $imageHeight, $quality, $isWebpSupported, &$defaultURL) {
-            if ($width !== null) {
-                $options = ['width' => (int) $width];
-                if ($options['width'] < 1) {
-                    $options['width'] = 1;
-                }
-                if ($aspectRatio !== null) {
-                    $options['height'] = (int) ($width * $aspectRatio[1] / $aspectRatio[0]);
-                    if ($options['height'] > $imageHeight) {
-                        return;
-                    }
-                    if ($options['height'] < 1) {
-                        $options['height'] = 1;
-                    }
-                }
+        $addVersionURL = function (int $width = null, int $height = null, int $quality = null, array $outputTypes = []) use ($appAssets, &$versions, $filename, &$defaultURL) {
+            $key = $width . '-' . $height . '-' . $quality;
+            if (isset($versions[$key])) {
+                return;
             }
+            $options = [];
             $options['cacheMaxAge'] = 999999999;
-            if ($extension !== 'gif') {
-                if ($quality !== null) {
-                    $options['quality'] = $quality;
-                }
+            if ($width !== null) {
+                $options['width'] = $width;
+            }
+            if ($height !== null) {
+                $options['height'] = $height;
+            }
+            if ($quality !== null) {
+                $options['quality'] = $quality;
             }
             $url = $appAssets->getURL($filename, $options);
-            $defaultURL = $url;
+            $defaultURL = $url; // Last added version will be the the default one
             if ($width !== null) {
-                $versions[] =  $url . ' ' . $width . 'w';
-                if ($extension !== 'gif') {
-                    if ($isWebpSupported) {
-                        $options['outputType'] = 'webp';
-                        $versions[] = $appAssets->getURL($filename, $options) . ' ' . $width . 'w webp';
-                    }
+                $versions[$key] =  $url . ' ' . $width . 'w';
+                foreach ($outputTypes as $outputType) {
+                    $options['outputType'] = $outputType;
+                    $versions[] = $appAssets->getURL($filename, $options) . ' ' . $width . 'w ' . $outputType;
                 }
             }
         };
         if ($extension === 'gif') {
-            $addVersionURL(null);
+            $addVersionURL(null, null, null, []);
         } else {
-            $widths = [50, 75, 100, 125, 150, 175, 200, 250, 300, 350, 400, 450, 500, 550, 600, 650, 700, 750, 800, 850, 900, 950, 1000, 1100, 1200, 1300, 1400, 1500, 1700, 1900, 2100, 2500, 3000, 3500, 4000, 5000, 6000, 7000, 8000, 9000, 10000];
-            foreach ($widths as $width) {
-                if ($width <= $imageWidth) {
-                    $addVersionURL($width);
+            $outputTypes = [];
+            if ($appAssets->isSupportedOutputType('webp')) {
+                $outputTypes[] = 'webp';
+            }
+            $calculateAspectRatioValues = function (int $width) use ($aspectRatio, $fileHeight) {
+                $height = (int) ($width * $aspectRatio[1] / $aspectRatio[0]);
+                if ($height > $fileHeight) {
+                    $newWidth = floor($fileHeight / $aspectRatio[1] * $aspectRatio[0]);
+                    if ($newWidth < 1) {
+                        $newWidth = 1;
+                    }
+                    return [$newWidth, $fileHeight];
                 }
+                if ($height < 1) {
+                    $height = 1;
+                }
+                return [$width, $height];
+            };
+            $widths = [50, 75, 100, 125, 150, 175, 200, 250, 300, 350, 400, 450, 500, 550, 600, 650, 700, 750, 800, 850, 900, 950, 1000, 1100, 1200, 1300, 1400, 1500, 1700, 1900, 2100, 2500, 3000, 3500, 4000, 5000, 6000, 7000, 8000, 9000, 10000, $fileWidth];
+            $addWidthForHeight = function (int $height, array $aspectRatio) use (&$widths) {
+                $width = floor($height / $aspectRatio[1] * $aspectRatio[0]);
+                if ($width < 1) {
+                    $width = 1;
+                }
+                $widths[] = $width;
+            };
+            if ($aspectRatio !== null) { // Version for the max file height
+                $addWidthForHeight($fileHeight, $aspectRatio);
             }
-            if ($aspectRatio !== null) { // version for the max height
-                $addVersionURL(floor($imageHeight / $aspectRatio[1] * $aspectRatio[0]));
+            if ($minImageHeight !== null) { // Version for the min image height
+                $addWidthForHeight($minImageHeight, $aspectRatio !== null ? $aspectRatio : [$fileWidth, $fileHeight]);
             }
-            $addVersionURL($imageWidth); // version for the max width
+            if ($maxImageHeight !== null) { // Version for the max image height
+                $addWidthForHeight($maxImageHeight, $aspectRatio !== null ? $aspectRatio : [$fileWidth, $fileHeight]);
+            }
+            if ($minImageWidth !== null) { // Version for the min image width
+                $widths[] = $minImageWidth;
+            }
+            if ($maxImageWidth !== null) { // Version for the max image width
+                $widths[] = $maxImageWidth;
+            }
+            sort($widths);
+            foreach ($widths as $width) {
+                if ($width > $fileWidth) {
+                    continue;
+                }
+                if ($maxImageWidth !== null && $width > $maxImageWidth) {
+                    continue;
+                }
+                if ($minImageWidth !== null && $width < $minImageWidth) {
+                    continue;
+                }
+                if ($aspectRatio !== null) {
+                    list($versionWidth, $versionHeight) = $calculateAspectRatioValues($width);
+                } else {
+                    $versionWidth = $width;
+                    $versionHeight = null;
+                }
+                if ($minImageHeight !== null || $maxImageHeight !== null) {
+                    $height = $versionHeight !== null ? $versionHeight : floor($width / $fileWidth * $fileWidth);
+                    if ($minImageHeight !== null) {
+                        if ($height < $minImageHeight) {
+                            continue;
+                        }
+                    } else {
+                        if ($height > $maxImageHeight) {
+                            continue;
+                        }
+                    }
+                }
+                $addVersionURL($versionWidth, $versionHeight, $quality, $outputTypes);
+            }
         }
-        $versions = array_unique($versions);
 
         if ($aspectRatio === null) {
-            $aspectRatio = [$imageWidth, $imageHeight];
+            $aspectRatio = [$fileWidth, $fileHeight];
         }
     }
 }
