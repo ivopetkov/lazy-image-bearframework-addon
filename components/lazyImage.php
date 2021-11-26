@@ -62,8 +62,8 @@ $filename = (string) $component->filename;
 if ($filename !== '') {
     if ($fileWidth === null || $fileHeight === null) {
         $details = $appAssets->getDetails($filename, ['width', 'height']);
-        $fileWidth = $details['width'];
-        $fileHeight = $details['height'];
+        $fileWidth = (int)$details['width'];
+        $fileHeight = (int)$details['height'];
     }
     $extension = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
     if ($fileWidth > 0 && $fileHeight > 0) {
