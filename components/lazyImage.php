@@ -46,13 +46,13 @@ if ($maxImageHeight === 0) {
 }
 
 $quality = (string)$component->getAttribute('quality');
-$quality = strlen($quality) === 0 ? null : (int)$quality;
+$quality = $quality === '' ? null : (int)$quality;
 
 $fileWidth = (string)$component->getAttribute('filewidth');
-$fileWidth = strlen($fileWidth) === 0 ? null : (int)$fileWidth;
+$fileWidth = $fileWidth === '' ? null : (int)$fileWidth;
 
 $fileHeight = (string)$component->getAttribute('fileheight');
-$fileHeight = strlen($fileHeight) === 0 ? null : (int)$fileHeight;
+$fileHeight = $fileHeight === '' ? null : (int)$fileHeight;
 
 $containerStyle = 'display:inline-block;width:100%;overflow:hidden;';
 
@@ -216,7 +216,7 @@ echo '<html>';
 echo '<head><link rel="client-packages-embed" name="responsivelyLazy"></head>';
 
 echo '<body>';
-echo '<span ' . $classAttribute . ' style="' . $containerStyle . htmlentities($component->style) . '">';
+echo '<span ' . $classAttribute . ' style="' . $containerStyle . htmlentities((string)$component->style) . '">';
 echo '<span style="' . $imageContainerStyle . '">';
 echo '<img ' . $imageAttributes . ' style="' . $imageStyle . '" />';
 echo '</span>';
