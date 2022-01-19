@@ -21,10 +21,18 @@ if (preg_match('/^[0-9\.]+:[0-9\.]+$/', $temp) === 1) {
 unset($temp);
 
 $loadingBackground = 'checkered';
+$loadingBackgroundIsColor = false;
+$loadingBackgroundIsAttribute = false;
 $temp = (string) $component->loadingBackground;
 if ($temp !== '') {
     if (array_search($temp, ['checkered', 'none']) !== false) {
         $loadingBackground = $temp;
+    } else if (strpos($temp, 'color:') === 0) {
+        $loadingBackgroundIsColor = true;
+        $loadingBackground = substr($temp, 6);
+    } else if (strpos($temp, 'attribute:') === 0) {
+        $loadingBackgroundIsAttribute = true;
+        $loadingBackground = substr($temp, 10);
     }
 }
 
@@ -188,6 +196,7 @@ if ($filename !== '') {
 }
 
 $imageContainerStyle = 'position:relative;height:0;display:block;';
+$imageContainerAttributes = '';
 
 $imageAttributes = '';
 
@@ -209,6 +218,12 @@ $imageAttributes .= ' data-responsively-lazy-threshold="100%"';
 if ($loadingBackground === 'checkered') {
     $imageAttributes .= ' data-on-responsively-lazy-load="this.parentNode.style.backgroundImage=\'none\';"';
     $imageContainerStyle .= 'background-image:url(\'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUAQMAAAC3R49OAAAABlBMVEUAAAD///+l2Z/dAAAAAnRSTlMZGYn4zOAAAAAUSURBVAjXY2Sw38hIDP5/0IEYDADG0R1147/PtQAAAABJRU5ErkJggg==\');';
+} elseif ($loadingBackgroundIsColor) {
+    $imageAttributes .= ' data-on-responsively-lazy-load="this.parentNode.style.backgroundColor=\'none\';"';
+    $imageContainerStyle .= 'background-color:' . $loadingBackground . ';';
+} elseif ($loadingBackgroundIsAttribute) {
+    $imageAttributes .= ' data-on-responsively-lazy-load="this.parentNode.removeAttribute(\'' . htmlentities($loadingBackground) . '\');"';
+    $imageContainerAttributes .= ' ' . htmlentities($loadingBackground) . '=""';
 }
 
 echo '<html>';
@@ -217,7 +232,7 @@ echo '<head><link rel="client-packages-embed" name="responsivelyLazy"></head>';
 
 echo '<body>';
 echo '<span ' . $classAttribute . ' style="' . $containerStyle . htmlentities((string)$component->style) . '">';
-echo '<span style="' . $imageContainerStyle . '">';
+echo '<span style="' . $imageContainerStyle . '"' . $imageContainerAttributes . '>';
 echo '<img ' . $imageAttributes . ' style="' . $imageStyle . '" />';
 echo '</span>';
 echo '</span>';
