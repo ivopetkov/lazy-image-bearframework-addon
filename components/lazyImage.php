@@ -81,10 +81,11 @@ if ($filename !== '') {
                 $maxWidth = $fileWidth;
             }
             $maxHeight = $fileHeight;
-            $containerStyle .= 'max-width:' . $maxWidth . 'px;max-height:' . $maxHeight . 'px;';
         } else {
-            $containerStyle .= 'max-width:' . $fileWidth . 'px;max-height:' . $fileHeight . 'px;';
+            $maxWidth = $fileWidth;
+            $maxHeight = $fileHeight;
         }
+        $containerStyle = str_replace('width:100%;', '', $containerStyle) . 'width:' . $maxWidth . 'px;max-width:100%;max-height:' . $maxHeight . 'px;';
         $versions = [];
         $addVersionURL = function (int $width = null, int $height = null, int $quality = null, array $outputTypes = []) use ($appAssets, &$versions, $filename, &$defaultURL) {
             $key = $width . '-' . $height . '-' . $quality;
