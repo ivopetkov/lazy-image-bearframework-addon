@@ -87,7 +87,7 @@ if ($filename !== '') {
         }
         $containerStyle = str_replace('width:100%;', '', $containerStyle) . 'width:' . $maxWidth . 'px;max-width:100%;max-height:' . $maxHeight . 'px;';
         $versions = [];
-        $addVersionURL = function (int $width = null, int $height = null, int $quality = null, array $outputTypes = []) use ($appAssets, &$versions, $filename, &$defaultURL) {
+        $addVersionURL = function (int $width = null, int $height = null, int $fileWidth, int $quality = null, array $outputTypes) use ($appAssets, &$versions, $filename, &$defaultURL) {
             $key = $width . '-' . $height . '-' . $quality;
             if (isset($versions[$key])) {
                 return;
@@ -95,7 +95,11 @@ if ($filename !== '') {
             $options = [];
             $options['cacheMaxAge'] = 999999999;
             if ($width !== null) {
-                $options['width'] = $width;
+                if ($height === null && $width === $fileWidth) {
+                    // skip to optimize the URL
+                } else {
+                    $options['width'] = $width;
+                }
             }
             if ($height !== null) {
                 $options['height'] = $height;
@@ -114,7 +118,7 @@ if ($filename !== '') {
             }
         };
         if ($extension === 'gif') {
-            $addVersionURL(null, null, null, []);
+            $addVersionURL(null, null, $fileWidth, null, []);
         } else {
             $outputTypes = [];
             if ($appAssets->isSupportedOutputType('webp')) {
@@ -186,7 +190,7 @@ if ($filename !== '') {
                         }
                     }
                 }
-                $addVersionURL($versionWidth, $versionHeight, $quality, $outputTypes);
+                $addVersionURL($versionWidth, $versionHeight, $fileWidth, $quality, $outputTypes);
             }
         }
 
