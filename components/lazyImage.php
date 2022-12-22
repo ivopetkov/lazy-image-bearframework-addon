@@ -85,7 +85,9 @@ if ($filename !== '') {
             $maxWidth = $fileWidth;
             $maxHeight = $fileHeight;
         }
-        $containerStyle = str_replace('width:100%;', '', $containerStyle) . 'width:' . $maxWidth . 'px;max-width:100%;max-height:' . $maxHeight . 'px;';
+        if ($extension !== 'svg') {
+            $containerStyle = str_replace('width:100%;', '', $containerStyle) . 'width:' . $maxWidth . 'px;max-width:100%;max-height:' . $maxHeight . 'px;';
+        }
         $versions = [];
         $addVersionURL = function (int $width = null, int $height = null, int $fileWidth, int $quality = null, array $outputTypes) use ($appAssets, &$versions, $filename, &$defaultURL) {
             $key = $width . '-' . $height . '-' . $quality;
@@ -117,7 +119,7 @@ if ($filename !== '') {
                 }
             }
         };
-        if ($extension === 'gif') {
+        if ($extension === 'gif' || $extension === 'svg') {
             $addVersionURL(null, null, $fileWidth, null, []);
         } else {
             $outputTypes = [];
