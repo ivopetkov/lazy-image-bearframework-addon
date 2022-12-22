@@ -82,7 +82,7 @@ $containerStyle = 'display:inline-block;width:100%;overflow:hidden;';
 
 $defaultURL = null;
 
-$filename = (string) $component->filename;
+$filename = (string) $component->getAttribute('filename');
 if ($filename !== '') {
     if ($fileWidth === null || $fileHeight === null) {
         $details = $appAssets->getDetails($filename, ['width', 'height']);
@@ -219,11 +219,11 @@ $imageContainerAttributes = '';
 
 $imageAttributes = '';
 
-$class = (string) $component->class;
+$class = (string) $component->getAttribute('class');
 $classAttribute = isset($class[0]) ? ' class="' . htmlentities($class) . '"' : '';
-$alt = (string) $component->alt;
+$alt = (string) $component->getAttribute('alt');
 $imageAttributes .= isset($alt[0]) ? ' alt="' . htmlentities($alt) . '"' : ' alt=""';
-$title = (string) $component->title;
+$title = (string) $component->getAttribute('title');
 $imageAttributes .= isset($title[0]) ? ' title="' . htmlentities($title) . '"' : '';
 
 $imageStyle = 'position:absolute;top:0;left:0;width:100%;height:100%;';
@@ -250,7 +250,7 @@ echo '<html>';
 echo '<head><link rel="client-packages-embed" name="responsivelyLazy"></head>';
 
 echo '<body>';
-echo '<span ' . $classAttribute . ' style="' . $containerStyle . htmlentities((string)$component->style) . '">';
+echo '<span ' . $classAttribute . ' style="' . $containerStyle . htmlentities((string)$component->getAttribute('style')) . '">';
 echo '<span style="' . $imageContainerStyle . '"' . $imageContainerAttributes . '>';
 echo '<img ' . $imageAttributes . ' style="' . $imageStyle . '" />';
 echo '</span>';
