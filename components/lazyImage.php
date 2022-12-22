@@ -13,7 +13,7 @@ $app = App::get();
 $appAssets = $app->assets;
 
 $aspectRatio = null;
-$temp = (string) $component->aspectRatio;
+$temp = (string) $component->getAttribute('aspect-ratio');
 if (preg_match('/^[0-9\.]+:[0-9\.]+$/', $temp) === 1) {
     $temp = explode(':', $temp);
     $aspectRatio = [(float) $temp[0], (float) $temp[1]];
@@ -23,7 +23,7 @@ unset($temp);
 $loadingBackground = 'checkered';
 $loadingBackgroundIsColor = false;
 $loadingBackgroundIsAttribute = false;
-$temp = (string) $component->loadingBackground;
+$temp = (string) $component->getAttribute('loading-background');
 if ($temp !== '') {
     if (array_search($temp, ['checkered', 'none']) !== false) {
         $loadingBackground = $temp;
@@ -36,27 +36,27 @@ if ($temp !== '') {
     }
 }
 
-$minImageWidth = (int)$component->minImageWidth;
-if ($minImageWidth === 0) {
-    $minImageWidth = null;
+$minAssetWidth = (int)$component->getAttribute('min-asset-width');
+if ($minAssetWidth === 0) {
+    $minAssetWidth = null;
 }
-$minImageHeight = (int)$component->minImageHeight;
-if ($minImageHeight === 0) {
-    $minImageHeight = null;
+$minAssetHeight = (int)$component->getAttribute('min-asset-height');
+if ($minAssetHeight === 0) {
+    $minAssetHeight = null;
 }
-$maxImageWidth = (int)$component->maxImageWidth;
-if ($maxImageWidth === 0) {
-    $maxImageWidth = null;
+$maxAssetWidth = (int)$component->getAttribute('max-asset-width');
+if ($maxAssetWidth === 0) {
+    $maxAssetWidth = null;
 }
-$maxImageHeight = (int)$component->maxImageHeight;
-if ($maxImageHeight === 0) {
-    $maxImageHeight = null;
+$maxAssetHeight = (int)$component->getAttribute('max-asset-height');
+if ($maxAssetHeight === 0) {
+    $maxAssetHeight = null;
 }
 
-$fileWidth = (string)$component->getAttribute('filewidth');
+$fileWidth = (string)$component->getAttribute('file-width');
 $fileWidth = $fileWidth === '' ? null : (int)$fileWidth;
 
-$fileHeight = (string)$component->getAttribute('fileheight');
+$fileHeight = (string)$component->getAttribute('file-height');
 $fileHeight = $fileHeight === '' ? null : (int)$fileHeight;
 
 $supportedAssetOptionsAttributes = [
@@ -163,27 +163,27 @@ if ($filename !== '') {
             if ($aspectRatio !== null) { // Version for the max file height
                 $addWidthForHeight($fileHeight, $aspectRatio);
             }
-            if ($minImageHeight !== null) { // Version for the min image height
-                $addWidthForHeight($minImageHeight, $aspectRatio !== null ? $aspectRatio : [$fileWidth, $fileHeight]);
+            if ($minAssetHeight !== null) { // Version for the min image height
+                $addWidthForHeight($minAssetHeight, $aspectRatio !== null ? $aspectRatio : [$fileWidth, $fileHeight]);
             }
-            if ($maxImageHeight !== null) { // Version for the max image height
-                $addWidthForHeight($maxImageHeight, $aspectRatio !== null ? $aspectRatio : [$fileWidth, $fileHeight]);
+            if ($maxAssetHeight !== null) { // Version for the max image height
+                $addWidthForHeight($maxAssetHeight, $aspectRatio !== null ? $aspectRatio : [$fileWidth, $fileHeight]);
             }
-            if ($minImageWidth !== null) { // Version for the min image width
-                $widths[] = $minImageWidth;
+            if ($minAssetWidth !== null) { // Version for the min image width
+                $widths[] = $minAssetWidth;
             }
-            if ($maxImageWidth !== null) { // Version for the max image width
-                $widths[] = $maxImageWidth;
+            if ($maxAssetWidth !== null) { // Version for the max image width
+                $widths[] = $maxAssetWidth;
             }
             sort($widths);
             foreach ($widths as $width) {
                 if ($width > $fileWidth) {
                     continue;
                 }
-                if ($maxImageWidth !== null && $width > $maxImageWidth) {
+                if ($maxAssetWidth !== null && $width > $maxAssetWidth) {
                     continue;
                 }
-                if ($minImageWidth !== null && $width < $minImageWidth) {
+                if ($minAssetWidth !== null && $width < $minAssetWidth) {
                     continue;
                 }
                 if ($aspectRatio !== null) {
@@ -192,14 +192,14 @@ if ($filename !== '') {
                     $versionWidth = $width;
                     $versionHeight = null;
                 }
-                if ($minImageHeight !== null || $maxImageHeight !== null) {
+                if ($minAssetHeight !== null || $maxAssetHeight !== null) {
                     $height = $versionHeight !== null ? $versionHeight : floor($width / $fileWidth * $fileWidth);
-                    if ($minImageHeight !== null) {
-                        if ($height < $minImageHeight) {
+                    if ($minAssetHeight !== null) {
+                        if ($height < $minAssetHeight) {
                             continue;
                         }
                     } else {
-                        if ($height > $maxImageHeight) {
+                        if ($height > $maxAssetHeight) {
                             continue;
                         }
                     }
