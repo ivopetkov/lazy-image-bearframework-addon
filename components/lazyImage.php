@@ -53,14 +53,30 @@ if ($maxImageHeight === 0) {
     $maxImageHeight = null;
 }
 
-$quality = (string)$component->getAttribute('quality');
-$quality = $quality === '' ? null : (int)$quality;
-
 $fileWidth = (string)$component->getAttribute('filewidth');
 $fileWidth = $fileWidth === '' ? null : (int)$fileWidth;
 
 $fileHeight = (string)$component->getAttribute('fileheight');
 $fileHeight = $fileHeight === '' ? null : (int)$fileHeight;
+
+$supportedAssetOptionsAttributes = [
+    'cacheMaxAge' => ['asset-cache-max-age', 'int'],
+    'quality' => ['asset-quality', 'int'],
+    'svgFill' => ['asset-svg-fill', 'string'],
+    'svgStroke' => ['asset-svg-stroke', 'string']
+];
+
+$assetOptions = [];
+foreach ($supportedAssetOptionsAttributes as $assetOptionName => $assetOptionAttributeData) {
+    $assetOptionAttributeName = $assetOptionAttributeData[0];
+    $assetOptionAttributeValue = (string)$component->getAttribute($assetOptionAttributeName);
+    if ($assetOptionAttributeValue !== '') {
+        if ($assetOptionAttributeData[1] === 'int') {
+            $assetOptionAttributeValue = (int)$assetOptionAttributeValue;
+        }
+        $assetOptions[$assetOptionName] = $assetOptionAttributeValue;
+    }
+}
 
 $containerStyle = 'display:inline-block;width:100%;overflow:hidden;';
 
@@ -89,13 +105,12 @@ if ($filename !== '') {
             $containerStyle = str_replace('width:100%;', '', $containerStyle) . 'width:' . $maxWidth . 'px;max-width:100%;max-height:' . $maxHeight . 'px;';
         }
         $versions = [];
-        $addVersionURL = function (int $width = null, int $height = null, int $fileWidth, int $quality = null, array $outputTypes) use ($appAssets, &$versions, $filename, &$defaultURL) {
-            $key = $width . '-' . $height . '-' . $quality;
+        $addVersionURL = function (int $width = null, int $height = null, int $fileWidth, array $outputTypes) use ($appAssets, &$versions, $filename, &$defaultURL, $assetOptions) {
+            $key = $width . '-' . $height;
             if (isset($versions[$key])) {
                 return;
             }
-            $options = [];
-            $options['cacheMaxAge'] = 999999999;
+            $options = $assetOptions;
             if ($width !== null) {
                 if ($height === null && $width === $fileWidth) {
                     // skip to optimize the URL
@@ -105,9 +120,6 @@ if ($filename !== '') {
             }
             if ($height !== null) {
                 $options['height'] = $height;
-            }
-            if ($quality !== null) {
-                $options['quality'] = $quality;
             }
             $url = $appAssets->getURL($filename, $options);
             $defaultURL = $url; // Last added version will be the the default one
@@ -120,7 +132,7 @@ if ($filename !== '') {
             }
         };
         if ($extension === 'gif' || $extension === 'svg') {
-            $addVersionURL(null, null, $fileWidth, null, []);
+            $addVersionURL(null, null, $fileWidth, []);
         } else {
             $outputTypes = [];
             if ($appAssets->isSupportedOutputType('webp')) {
@@ -192,7 +204,7 @@ if ($filename !== '') {
                         }
                     }
                 }
-                $addVersionURL($versionWidth, $versionHeight, $fileWidth, $quality, $outputTypes);
+                $addVersionURL($versionWidth, $versionHeight, $fileWidth, $outputTypes);
             }
         }
 
