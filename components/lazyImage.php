@@ -233,7 +233,7 @@ if ($aspectRatio !== null) {
 $imageAttributes .= isset($defaultURL) ? ' src="' . htmlentities($defaultURL) . '"' : '';
 $imageAttributes .= ' srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="';
 $imageAttributes .= isset($versions) ? ' data-responsively-lazy="' . htmlentities(implode(', ', $versions)) . '"' : '';
-$imageAttributes .= ' data-responsively-lazy-threshold="100%"';
+$imageAttributes .= ' data-responsively-lazy-threshold="300%"';
 if ($loadingBackground === 'checkered') {
     $imageAttributes .= ' data-on-responsively-lazy-load="this.parentNode.style.backgroundImage=\'none\';"';
     $imageContainerStyle .= 'background-image:url(\'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUAQMAAAC3R49OAAAABlBMVEUAAAD///+l2Z/dAAAAAnRSTlMZGYn4zOAAAAAUSURBVAjXY2Sw38hIDP5/0IEYDADG0R1147/PtQAAAABJRU5ErkJggg==\');';
