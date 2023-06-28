@@ -136,7 +136,14 @@ if ($filename !== '') {
         } else {
             $outputTypes = [];
             if ($appAssets->isSupportedOutputType('webp')) {
-                $outputTypes[] = 'webp';
+                if ($extension === 'webp') {
+                    $outputTypes[] = 'png'; // fallback for old browsers
+                } else {
+                    $outputTypes[] = 'webp';
+                }
+            }
+            if ($extension === 'avif') {
+                $outputTypes[] = 'png'; // fallback for old browsers
             }
             $calculateAspectRatioValues = function (int $width) use ($aspectRatio, $fileHeight) {
                 $height = (int) ($width * $aspectRatio[1] / $aspectRatio[0]);
