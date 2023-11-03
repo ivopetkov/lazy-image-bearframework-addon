@@ -29,15 +29,14 @@ class LazyImageTest extends BearFramework\AddonTests\PHPUnitTestCase
         $this->assertTrue(strpos($result, '/test.jpg') !== false);
         $this->assertTrue(strpos($result, 'srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="') !== false);
 
-        $result = $app->components->process('<component src="lazy-image" filename="' . $tempDir . '/images/test.jpg" aspectRatio="1:1" />');
+        $result = $app->components->process('<component src="lazy-image" filename="' . $tempDir . '/images/test.jpg" aspect-ratio="1:1" />');
         $this->assertTrue(strpos($result, '-w70-h70-') !== false);
         $this->assertTrue(strpos($result, '/test.jpg') !== false);
 
-        $result = $app->components->process('<component src="lazy-image" filename="' . $tempDir . '/images/test.jpg" loadingBackground="checkered" />');
+        $result = $app->components->process('<component src="lazy-image" filename="' . $tempDir . '/images/test.jpg" loading-background="checkered" />');
         $this->assertTrue(strpos($result, 'background-image:url(\'data:image/png;base64,iVBORw0KGgoAAAANSUhE') !== false);
 
-        $result = $app->components->process('<component src="lazy-image" filename="' . $tempDir . '/images/test.jpg" loadingBackground="none" />');
+        $result = $app->components->process('<component src="lazy-image" filename="' . $tempDir . '/images/test.jpg" loading-background="none" />');
         $this->assertTrue(strpos($result, 'background-image:url(\'data:image/png;base64,iVBORw0KGgoAAAANSUhE') === false);
     }
-
 }
