@@ -221,7 +221,7 @@ if ($filename !== '') {
     }
 }
 
-$imageContainerStyle = 'position:relative;height:0;display:block;';
+$imageContainerStyle = 'height:0;display:block;';//position:relative;
 $imageContainerAttributes = '';
 
 $imageAttributes = '';
@@ -233,7 +233,7 @@ $imageAttributes .= isset($alt[0]) ? ' alt="' . htmlentities($alt) . '"' : ' alt
 $title = (string) $component->getAttribute('title');
 $imageAttributes .= isset($title[0]) ? ' title="' . htmlentities($title) . '"' : '';
 
-$imageStyle = 'position:absolute;top:0;left:0;width:100%;height:100%;';
+$imageStyle = 'width:100%;';//position:absolute;top:0;left:0;height:100%;
 if ($aspectRatio !== null) {
     $imageContainerStyle .= 'padding-bottom:' . (number_format($aspectRatio[1] / $aspectRatio[0], 6, '.', '') * 100) . '%;';
 }
