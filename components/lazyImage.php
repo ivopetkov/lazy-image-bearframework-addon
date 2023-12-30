@@ -124,11 +124,11 @@ if ($filename !== '') {
             $url = $appAssets->getURL($filename, $options);
             $defaultURL = $url; // Last added version will be the the default one
             if ($width !== null) {
-                $versions[$key] =  $url . ' ' . $width . 'w';
                 foreach ($outputTypes as $outputType) {
                     $options['outputType'] = $outputType;
                     $versions[] = $appAssets->getURL($filename, $options) . ' ' . $width . 'w ' . $outputType;
                 }
+                $versions[$key] =  $url . ' ' . $width . 'w';
             }
         };
         if ($extension === 'gif' || $extension === 'svg') {
