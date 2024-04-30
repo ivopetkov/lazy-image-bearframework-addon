@@ -59,6 +59,9 @@ $fileWidth = $fileWidth === '' ? null : (int)$fileWidth;
 $fileHeight = (string)$component->getAttribute('file-height');
 $fileHeight = $fileHeight === '' ? null : (int)$fileHeight;
 
+$lazyThreshold = (string)$component->getAttribute('lazy-threshold');
+$lazyThreshold = $lazyThreshold === '' ? '300%' : $lazyThreshold;
+
 $supportedAssetOptionsAttributes = [
     'cacheMaxAge' => ['asset-cache-max-age', 'int'],
     'quality' => ['asset-quality', 'int'],
@@ -221,7 +224,7 @@ if ($filename !== '') {
     }
 }
 
-$imageContainerStyle = 'height:0;display:block;';//position:relative;
+$imageContainerStyle = 'height:0;display:block;'; //position:relative;
 $imageContainerAttributes = '';
 
 $imageAttributes = '';
@@ -233,14 +236,14 @@ $imageAttributes .= isset($alt[0]) ? ' alt="' . htmlentities($alt) . '"' : ' alt
 $title = (string) $component->getAttribute('title');
 $imageAttributes .= isset($title[0]) ? ' title="' . htmlentities($title) . '"' : '';
 
-$imageStyle = 'width:100%;';//position:absolute;top:0;left:0;height:100%;
+$imageStyle = 'width:100%;'; //position:absolute;top:0;left:0;height:100%;
 if ($aspectRatio !== null) {
     $imageContainerStyle .= 'padding-bottom:' . (number_format($aspectRatio[1] / $aspectRatio[0], 6, '.', '') * 100) . '%;';
 }
 $imageAttributes .= isset($defaultURL) ? ' src="' . htmlentities($defaultURL) . '"' : '';
 $imageAttributes .= ' srcset="data:image/gif;base64,R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="';
 $imageAttributes .= isset($versions) ? ' data-responsively-lazy="' . htmlentities(implode(', ', $versions)) . '"' : '';
-$imageAttributes .= ' data-responsively-lazy-threshold="300%"';
+$imageAttributes .= ' data-responsively-lazy-threshold="' . $lazyThreshold . '"';
 if ($loadingBackground === 'checkered') {
     $imageAttributes .= ' data-on-responsively-lazy-load="this.parentNode.style.backgroundImage=\'none\';"';
     $imageContainerStyle .= 'background-image:url(\'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUAQMAAAC3R49OAAAABlBMVEUAAAD///+l2Z/dAAAAAnRSTlMZGYn4zOAAAAAUSURBVAjXY2Sw38hIDP5/0IEYDADG0R1147/PtQAAAABJRU5ErkJggg==\');';
