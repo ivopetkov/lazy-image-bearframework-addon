@@ -108,7 +108,7 @@ if ($filename !== '') {
             $containerStyle = str_replace('width:100%;', '', $containerStyle) . 'width:' . $maxWidth . 'px;max-width:100%;max-height:' . $maxHeight . 'px;';
         }
         $versions = [];
-        $addVersionURL = function (int $width = null, int $height = null, int $fileWidth, array $outputTypes) use ($appAssets, &$versions, $filename, &$defaultURL, $assetOptions) {
+        $addVersionURL = function (int $width = null, int $height = null, int $fileWidth, array $outputTypes) use ($appAssets, &$versions, $filename, &$defaultURL, $assetOptions, $extension) {
             $key = $width . '-' . $height;
             if (isset($versions[$key])) {
                 return;
@@ -129,9 +129,11 @@ if ($filename !== '') {
             if ($width !== null) {
                 foreach ($outputTypes as $outputType) {
                     $options['outputType'] = $outputType;
-                    $versions[] = $appAssets->getURL($filename, $options) . ' ' . $width . 'w ' . $outputType;
+                    $versions[$key . '-' . $outputType] = $appAssets->getURL($filename, $options) . ' ' . $width . 'w ' . $outputType;
                 }
-                $versions[$key] =  $url . ' ' . $width . 'w';
+                if (array_search($extension, $outputTypes) === false) {
+                    $versions[$key] =  $url . ' ' . $width . 'w';
+                }
             }
         };
         if ($extension === 'gif' || $extension === 'svg') {
@@ -139,14 +141,15 @@ if ($filename !== '') {
         } else {
             $outputTypes = [];
             if ($appAssets->isSupportedOutputType('webp')) {
-                if ($extension === 'webp') {
-                    $outputTypes[] = 'png'; // fallback for old browsers
-                } else {
-                    $outputTypes[] = 'webp';
+                $outputTypes[] = 'webp'; // Add always even when extension is webp. Must be before PNG.
+            }
+            if ($appAssets->isSupportedOutputType('avif')) {
+                if ($extension === 'avif') { // Don't enable for all yet
+                    $outputTypes[] = 'avif'; // Add always even when extension is avif. Must be before PNG.
                 }
             }
-            if ($extension === 'avif') {
-                $outputTypes[] = 'png'; // fallback for old browsers
+            if ($extension === 'webp' || $extension === 'avif') {
+                $outputTypes[] = 'png'; // Fallback for old browsers
             }
             $calculateAspectRatioValues = function (int $width) use ($aspectRatio, $fileHeight) {
                 $height = (int) ($width * $aspectRatio[1] / $aspectRatio[0]);
