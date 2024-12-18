@@ -20,7 +20,7 @@ if (preg_match('/^[0-9\.]+:[0-9\.]+$/', $temp) === 1) {
 }
 unset($temp);
 
-$loadingBackground = 'checkered';
+$loadingBackground = 'none'; // checkered
 $loadingBackgroundIsColor = false;
 $loadingBackgroundIsAttribute = false;
 $temp = (string) $component->getAttribute('loading-background');
