@@ -108,7 +108,7 @@ if ($filename !== '') {
             $containerStyle = str_replace('width:100%;', '', $containerStyle) . 'width:' . $maxWidth . 'px;max-width:100%;max-height:' . $maxHeight . 'px;';
         }
         $versions = [];
-        $addVersionURL = function (int $width = null, int $height = null, int $fileWidth, array $outputTypes) use ($appAssets, &$versions, $filename, &$defaultURL, $assetOptions, $extension) {
+        $addVersionURL = function (?int $width, ?int $height, int $fileWidth, array $outputTypes) use ($appAssets, &$versions, $filename, &$defaultURL, $assetOptions, $extension): void {
             $key = $width . '-' . $height;
             if (isset($versions[$key])) {
                 return;
@@ -166,7 +166,7 @@ if ($filename !== '') {
                 return [$width, $height];
             };
             $widths = [50, 75, 100, 125, 150, 175, 200, 250, 300, 350, 400, 450, 500, 550, 600, 650, 700, 750, 800, 850, 900, 950, 1000, 1100, 1200, 1300, 1400, 1500, 1700, 1900, 2100, 2500, 3000, 3500, 4000, 5000, 6000, 7000, 8000, 9000, 10000, $fileWidth];
-            $addWidthForHeight = function (int $height, array $aspectRatio) use (&$widths) {
+            $addWidthForHeight = function (int $height, array $aspectRatio) use (&$widths): void {
                 $width = floor($height / $aspectRatio[1] * $aspectRatio[0]);
                 if ($width < 1) {
                     $width = 1;
