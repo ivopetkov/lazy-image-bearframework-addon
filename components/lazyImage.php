@@ -66,7 +66,12 @@ $supportedAssetOptionsAttributes = [
     'cacheMaxAge' => ['asset-cache-max-age', 'int'],
     'quality' => ['asset-quality', 'int'],
     'svgFill' => ['asset-svg-fill', 'string'],
-    'svgStroke' => ['asset-svg-stroke', 'string']
+    'svgStroke' => ['asset-svg-stroke', 'string'],
+    'rotate' => ['asset-rotate', 'int'],
+    'cropX' => ['asset-crop-x', 'int'],
+    'cropY' => ['asset-crop-y', 'int'],
+    'cropWidth' => ['asset-crop-width', 'int'],
+    'cropHeight' => ['asset-crop-height', 'int'],
 ];
 
 $assetOptions = [];
@@ -80,7 +85,6 @@ foreach ($supportedAssetOptionsAttributes as $assetOptionName => $assetOptionAtt
         $assetOptions[$assetOptionName] = $assetOptionAttributeValue;
     }
 }
-
 $containerStyle = 'display:inline-block;width:100%;overflow:hidden;';
 
 $defaultURL = null;
@@ -94,6 +98,14 @@ if ($filename !== '') {
     }
     $extension = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
     if ($fileWidth > 0 && $fileHeight > 0) {
+        if (isset($assetOptions['cropWidth'], $assetOptions['cropHeight'])) {
+            $fileWidth = $assetOptions['cropWidth'];
+            $fileHeight = $assetOptions['cropHeight'];
+        } else if (isset($assetOptions['rotate']) && array_search($assetOptions['rotate'], [90, 270]) !== false) {
+            $temp = $fileWidth;
+            $fileWidth = $fileHeight;
+            $fileHeight = $temp;
+        }
         if ($aspectRatio !== null) {
             $maxWidth = floor($fileHeight / ($aspectRatio[1] / $aspectRatio[0]));
             if ($maxWidth > $fileWidth) {
