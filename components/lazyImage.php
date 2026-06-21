@@ -203,10 +203,10 @@ if ($filename !== '') {
             sort($widths);
             foreach ($widths as $width) {
                 if ($width > $fileWidth) {
-                    continue;
+                    break;
                 }
                 if ($maxAssetWidth !== null && $width > $maxAssetWidth) {
-                    continue;
+                    break;
                 }
                 if ($minAssetWidth !== null && $width < $minAssetWidth) {
                     continue;
@@ -275,9 +275,9 @@ echo '<html>';
 echo '<head><link rel="client-packages-embed" name="responsivelyLazy"></head>';
 
 echo '<body>';
-echo '<span ' . $classAttribute . ' style="' . $containerStyle . htmlentities((string)$component->getAttribute('style')) . '">';
+echo '<span' . $classAttribute . ' style="' . $containerStyle . htmlentities((string)$component->getAttribute('style')) . '">';
 echo '<span style="' . $imageContainerStyle . '"' . $imageContainerAttributes . '>';
-echo '<img ' . $imageAttributes . ' style="' . $imageStyle . '" />';
+echo '<img' . $imageAttributes . ' style="' . $imageStyle . '" />';
 echo '</span>';
 echo '</span>';
 echo '</body>';
