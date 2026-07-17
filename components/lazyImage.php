@@ -119,8 +119,24 @@ if ($filename !== '') {
         if ($extension !== 'svg') {
             $containerStyle = str_replace('width:100%;', '', $containerStyle) . 'width:' . $maxWidth . 'px;max-width:100%;max-height:' . $maxHeight . 'px;';
         }
+        $predefinedWidths = [50, 100, 150, 200, 250, 300, 400, 500, 600, 700, 800, 900, 1000, 1100, 1200, 1300, 1400, 1500, 1700, 1900, 2200, 2500, 3000, 3500, 4000, 5000, 6000, 7000, 8000, 9000]; // The step must be 50. Hardcoded below.
+        $firstPredefinedWidth = $predefinedWidths[0];
+        $lastPredefinedWidth = $predefinedWidths[count($predefinedWidths) - 1];
+        $predefinedWidthsURLTemplates = [];
         $versions = [];
-        $addVersionURL = function (?int $width, ?int $height, int $fileWidth, array $outputTypes) use ($appAssets, &$versions, $filename, &$defaultURL, $assetOptions, $extension): void {
+        $getAssetURL = function (array $options, string $templateID) use ($appAssets, $filename, &$predefinedWidthsURLTemplates, $firstPredefinedWidth, $lastPredefinedWidth): string {
+            $width = isset($options['width']) ? $options['width'] : null;
+            $height = isset($options['height']) ? $options['height'] : null;
+            if ($width !== null && $height === null && $width >= $firstPredefinedWidth && $width <= $lastPredefinedWidth && $width % 50 === 0) {
+                if (!isset($predefinedWidthsURLTemplates[$templateID])) {
+                    $options['width'] = ['min' => $firstPredefinedWidth, 'max' => $lastPredefinedWidth, 'step' => 50, 'template' => '{width}'];
+                    $predefinedWidthsURLTemplates[$templateID] = $appAssets->getURL($filename, $options);
+                }
+                return str_replace('{width}', $width, $predefinedWidthsURLTemplates[$templateID]);
+            }
+            return $appAssets->getURL($filename, $options);
+        };
+        $addVersionURL = function (?int $width, ?int $height, int $fileWidth, array $outputTypes) use ($getAssetURL, &$versions, &$defaultURL, $assetOptions, $extension): void {
             $key = $width . '-' . $height;
             if (isset($versions[$key])) {
                 return;
@@ -136,12 +152,12 @@ if ($filename !== '') {
             if ($height !== null) {
                 $options['height'] = $height;
             }
-            $url = $appAssets->getURL($filename, $options);
+            $url = $getAssetURL($options, 'default');
             $defaultURL = $url; // Last added version will be the the default one
             if ($width !== null) {
                 foreach ($outputTypes as $outputType) {
                     $options['outputType'] = $outputType;
-                    $versions[$key . '-' . $outputType] = $appAssets->getURL($filename, $options) . ' ' . $width . 'w ' . $outputType;
+                    $versions[$key . '-' . $outputType] = $getAssetURL($options, $outputType) . ' ' . $width . 'w ' . $outputType;
                 }
                 if (array_search($extension, $outputTypes) === false) {
                     $versions[$key] =  $url . ' ' . $width . 'w';
@@ -177,7 +193,7 @@ if ($filename !== '') {
                 }
                 return [$width, $height];
             };
-            $widths = [50, 75, 100, 125, 150, 175, 200, 250, 300, 350, 400, 450, 500, 550, 600, 650, 700, 750, 800, 850, 900, 950, 1000, 1100, 1200, 1300, 1400, 1500, 1700, 1900, 2100, 2500, 3000, 3500, 4000, 5000, 6000, 7000, 8000, 9000, 10000, $fileWidth];
+            $widths = array_merge($predefinedWidths, [$fileWidth]);
             $addWidthForHeight = function (int $height, array $aspectRatio) use (&$widths): void {
                 $width = floor($height / $aspectRatio[1] * $aspectRatio[0]);
                 if ($width < 1) {
